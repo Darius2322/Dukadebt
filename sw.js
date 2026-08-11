@@ -3,33 +3,33 @@
    app loads and works with no network connection at all.
    ========================================================= */
 
-const CACHE_NAME = 'duka-ledger-v1';
+const CACHE_NAME = 'duka-ledger-v2';
 
 const CORE_ASSETS = [
   './',
   './index.html',
   './manifest.json',
-  './css/style.css',
-  './js/db.js',
-  './js/utils.js',
-  './js/app.js',
-  './js/customers.js',
-  './js/profile.js',
-  './js/transactions.js',
-  './js/reports.js',
-  './js/statement.js',
-  './js/settings.js',
-  './js/backup.js',
-  './icons/icon-72.png',
-  './icons/icon-96.png',
-  './icons/icon-128.png',
-  './icons/icon-144.png',
-  './icons/icon-152.png',
-  './icons/icon-192.png',
-  './icons/icon-192-maskable.png',
-  './icons/icon-384.png',
-  './icons/icon-512.png',
-  './icons/icon-512-maskable.png'
+  './style.css',
+  './db.js',
+  './utils.js',
+  './app.js',
+  './customers.js',
+  './profile.js',
+  './transactions.js',
+  './reports.js',
+  './statement.js',
+  './settings.js',
+  './backup.js',
+  './icon-72.png',
+  './icon-96.png',
+  './icon-128.png',
+  './icon-144.png',
+  './icon-152.png',
+  './icon-192.png',
+  './icon-192-maskable.png',
+  './icon-384.png',
+  './icon-512.png',
+  './icon-512-maskable.png'
 ];
 
 self.addEventListener('install', (event) => {
