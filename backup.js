@@ -9,6 +9,7 @@ const Backup = {
       const filename = `debt-book-backup-${Utils.todayInputValue()}.json`;
       Utils.downloadJSON(payload, filename);
       Toast.show('Backup downloaded', 'success');
+      await Sound.announce('backup_exported', 'Backup completed', `A backup of ${payload.data.customers.length} customers was exported`);
     } catch (err) {
       Toast.show(err.message || 'Backup failed', 'error');
     }
@@ -48,6 +49,7 @@ const Backup = {
       }
       await DB.restoreAll(payload);
       Toast.show('Backup restored', 'success');
+      await Sound.announce('backup_restored', 'Backup restored', 'All data was replaced from a backup file');
       this.pendingFile = null;
       document.getElementById('restoreFileName').textContent = 'No file selected';
       document.getElementById('restoreConfirmBtn').disabled = true;

@@ -16,6 +16,8 @@ const Settings = {
     document.getElementById('settingsPaybillAccount').value = s.paybillAccount || '';
     document.getElementById('settingsSupportPhone').value = s.supportPhone || '';
     document.getElementById('settingsSupportEmail').value = s.supportEmail || '';
+    document.getElementById('settingsSoundEnabled').checked = s.soundEnabled !== false;
+    document.getElementById('settingsPushEnabled').checked = !!s.pushEnabled;
     document.querySelectorAll('#themeSeg button').forEach(b => b.classList.toggle('active', b.dataset.theme === (s.theme || 'system')));
     this.renderSecurity();
   },
@@ -32,10 +34,12 @@ const Settings = {
     const paybillAccount = Utils.clean(document.getElementById('settingsPaybillAccount').value, 40);
     const supportPhone = Utils.clean(document.getElementById('settingsSupportPhone').value, 40);
     const supportEmail = Utils.clean(document.getElementById('settingsSupportEmail').value, 100);
+    const soundEnabled = document.getElementById('settingsSoundEnabled').checked;
 
-    State.settings = await DB.saveSettings({ businessName, businessPhone, businessLocation, currency, receiptFooter, allowOverpayment, pochiNumber, paybillNumber, paybillAccount, supportPhone, supportEmail });
+    State.settings = await DB.saveSettings({ businessName, businessPhone, businessLocation, currency, receiptFooter, allowOverpayment, pochiNumber, paybillNumber, paybillAccount, supportPhone, supportEmail, soundEnabled });
     Utils.currencySymbol = currency;
     Toast.show('Settings saved', 'success');
+    await DB.logActivity('settings_saved', 'Business settings were updated', { notify: false });
     await afterDataChange();
   },
 
@@ -82,6 +86,7 @@ const Settings = {
     State.settings = await DB.saveSettings({ pinHash: hash, pinSalt: salt });
     closeSheet('setPinSheet');
     Toast.show('PIN saved', 'success');
+    await Sound.announce('security_pin_set', 'PIN lock enabled', 'A PIN was set to protect this app');
     await Settings.renderSecurity();
   },
 
@@ -96,6 +101,7 @@ const Settings = {
     if (!ok) return;
     State.settings = await DB.saveSettings({ pinHash: '', pinSalt: '', biometricEnabled: false, biometricCredentialId: '' });
     Toast.show('PIN lock removed', 'success');
+    await Sound.announce('security_pin_removed', 'PIN lock removed', 'This app can now be opened without a PIN', { notify: true });
     await Settings.renderSecurity();
   },
 
@@ -125,6 +131,27 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('setPinSaveBtn').addEventListener('click', () => Settings.savePin());
   document.getElementById('removePinBtn').addEventListener('click', () => Settings.removePin());
   document.getElementById('settingsBiometric').addEventListener('change', (e) => Settings.toggleBiometric(e.target.checked));
+
+  document.getElementById('settingsPushEnabled').addEventListener('change', async (e) => {
+    if (e.target.checked) {
+      const result = await Sound.requestPushPermission();
+      if (result !== 'granted') {
+        e.target.checked = false;
+        Toast.show(result === 'unsupported' ? 'Device notifications are not supported on this browser' : 'Notification permission was not granted', 'error');
+        return;
+      }
+      await DB.saveSettings({ pushEnabled: true });
+      State.settings.pushEnabled = true;
+      Toast.show('Device notifications enabled', 'success');
+    } else {
+      await DB.saveSettings({ pushEnabled: false });
+      State.settings.pushEnabled = false;
+    }
+  });
+
+  document.getElementById('historyMenuBtn').addEventListener('click', () => History.open());
+  document.getElementById('termsMenuBtn').addEventListener('click', () => openSheet('termsSheet'));
+  document.getElementById('privacyMenuBtn').addEventListener('click', () => openSheet('privacySheet'));
 });
 
 window.Settings = Settings;

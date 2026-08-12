@@ -58,6 +58,7 @@
     </div>
     <div class="topbar-actions">
       <span class="pill" id="connPill"><span class="dot"></span><span class="pill-label">Online</span></span>
+      <button class="iconbtn" id="notifBtn" title="Notifications" style="position:relative;">🔔<span class="badge-dot" id="notifBadge" style="display:none;"></span></button>
       <button class="iconbtn" id="installBtn" title="Install app" style="display:none;">⭳</button>
       <button class="iconbtn" id="themeToggleBtn" title="Toggle theme">◐</button>
     </div>
@@ -152,12 +153,25 @@
       </div>
 
       <div class="settings-group">
+        <h3>Notifications</h3>
+        <label class="checkline" style="margin-bottom:12px;"><input type="checkbox" id="settingsSoundEnabled"> Play a sound for new debts, payments and other events</label>
+        <label class="checkline"><input type="checkbox" id="settingsPushEnabled"> Show device notifications (uses your phone's own notification sound)</label>
+      </div>
+
+      <div class="settings-group">
         <h3>Appearance</h3>
         <div class="seg" id="themeSeg">
           <button data-theme="light">Light</button>
           <button data-theme="dark">Dark</button>
           <button data-theme="system">System</button>
         </div>
+      </div>
+
+      <div class="settings-group">
+        <h3>Support Contact</h3>
+        <p class="muted" style="margin-bottom:12px;">Shown on the About screen so customers or staff can reach you.</p>
+        <div class="field"><label>Support Phone (WhatsApp)</label><input type="tel" id="settingsSupportPhone" placeholder="e.g. 0700 000 000"></div>
+        <div class="field"><label>Support Email</label><input type="text" id="settingsSupportEmail" placeholder="e.g. you@example.com"></div>
       </div>
 
       <button class="btn btn-primary" id="settingsSaveBtn">Save Settings</button>
@@ -192,23 +206,32 @@
       <div class="divider"></div>
 
       <div class="settings-group">
-        <h3>Support Contact</h3>
-        <p class="muted" style="margin-bottom:12px;">Shown on the About screen so customers or staff can reach you.</p>
-        <div class="field"><label>Support Phone (WhatsApp)</label><input type="tel" id="settingsSupportPhone" placeholder="e.g. 0700 000 000"></div>
-        <div class="field"><label>Support Email</label><input type="text" id="settingsSupportEmail" placeholder="e.g. you@example.com"></div>
-      </div>
-
-      <div class="settings-group">
-        <div class="action-row" id="aboutMenuBtn" style="border:1px solid var(--rule); border-bottom:1px solid var(--rule); border-radius:var(--radius); padding:14px;">
-          <div class="ic">ℹ️</div>
-          <div><div class="t">About Duka Ledger</div><div class="s">Founder, support & version info</div></div>
+        <h3>More</h3>
+        <div class="settings-list-card">
+          <div class="list-row" id="historyMenuBtn">
+            <div class="ic">📜</div>
+            <div class="body"><div class="t">History</div><div class="s">Every record and action, in order</div></div>
+            <div class="chev">›</div>
+          </div>
+          <div class="list-row" id="aboutMenuBtn">
+            <div class="ic">ℹ️</div>
+            <div class="body"><div class="t">About Duka Ledger</div><div class="s">Founder, support &amp; version info</div></div>
+            <div class="chev">›</div>
+          </div>
+          <div class="list-row" id="termsMenuBtn">
+            <div class="ic">📄</div>
+            <div class="body"><div class="t">Terms &amp; Conditions</div></div>
+            <div class="chev">›</div>
+          </div>
+          <div class="list-row" id="privacyMenuBtn">
+            <div class="ic">🔐</div>
+            <div class="body"><div class="t">Privacy Policy</div></div>
+            <div class="chev">›</div>
+          </div>
         </div>
       </div>
 
-      <div class="divider"></div>
-
       <div class="settings-group">
-        <h3>Privacy</h3>
         <div class="privacy-note">Your debt records are stored locally on this device. We do not upload your data to a server.</div>
         <div style="height:10px;"></div>
         <div class="warn-note">Clearing your browser or app storage without exporting a backup first may permanently remove all customer and transaction records.</div>
@@ -223,7 +246,14 @@
 
   </main>
 
+  <button class="scroll-top-btn" id="scrollTopBtn" aria-label="Scroll to top">↑</button>
+
   <button class="fab" id="fabBtn" aria-label="Add">+</button>
+
+  <div class="update-banner" id="updateBanner">
+    <span class="msg">A new version of Duka Ledger is ready.</span>
+    <button id="updateNowBtn">Update Now</button>
+  </div>
 
   <nav class="bottomnav">
     <button class="active" data-view="dashboard">
@@ -290,6 +320,7 @@
   <div class="sheet">
     <div class="grabber"></div>
     <div class="sheet-header"><h2 id="customerFormTitle">Add Customer</h2><button class="iconbtn" data-close-sheet>✕</button></div>
+    <button class="btn btn-outline" id="importContactBtn" style="display:none; margin-bottom:16px;">📇 Import from Contacts</button>
     <div class="field"><label>Full Name *</label><input type="text" id="custName" placeholder="e.g. John Otieno"></div>
     <div class="field"><label>Phone Number</label><input type="tel" id="custPhone" placeholder="0712 345 678"></div>
     <div class="field"><label>Address / Location</label><input type="text" id="custAddress" placeholder="Optional"></div>
@@ -381,6 +412,68 @@
   </div>
 </div>
 
+<!-- ================= SHEET: Notifications ================= -->
+<div class="overlay" id="notifSheet">
+  <div class="sheet">
+    <div class="grabber"></div>
+    <div class="sheet-header">
+      <h2>Notifications</h2>
+      <div style="display:flex; gap:8px; align-items:center;">
+        <button class="link-btn" id="notifMarkReadBtn" style="font-size:12px;">Mark all read</button>
+        <button class="iconbtn" data-close-sheet>✕</button>
+      </div>
+    </div>
+    <div id="notifList"></div>
+  </div>
+</div>
+
+<!-- ================= SHEET: History (full activity log) ================= -->
+<div class="overlay" id="historySheet">
+  <div class="sheet">
+    <div class="grabber"></div>
+    <div class="sheet-header"><h2>History</h2><button class="iconbtn" data-close-sheet>✕</button></div>
+    <p class="muted" style="margin-bottom:12px;">Every action taken in Duka Ledger — customers, debts, payments, backups and settings — recorded here for your records.</p>
+    <div id="historyList"></div>
+  </div>
+</div>
+
+<!-- ================= SHEET: Terms & Conditions ================= -->
+<div class="overlay" id="termsSheet">
+  <div class="sheet">
+    <div class="grabber"></div>
+    <div class="sheet-header"><h2>Terms &amp; Conditions</h2><button class="iconbtn" data-close-sheet>✕</button></div>
+    <div class="legal-text">
+      <p><strong>Last updated: August 2026</strong></p>
+      <p>Duka Ledger is provided by Darius Momanyi ("we", "our") as a free, offline-first tool to help small businesses and individuals record customer credit, debts, and payments.</p>
+      <p><strong>1. Your data, your device.</strong> All records you create — customers, transactions, settings — are stored only in your device's local storage (IndexedDB). We do not run a server for this app and never receive, store, or transmit your business data.</p>
+      <p><strong>2. Your responsibility.</strong> You are solely responsible for the accuracy of the records you enter and for backing up your data regularly using the Export Backup feature. We are not liable for any loss of data, financial disagreements, or business decisions made using this app.</p>
+      <p><strong>3. No warranty.</strong> Duka Ledger is provided "as is" without warranties of any kind, express or implied. We do not guarantee the app will be error-free or uninterrupted.</p>
+      <p><strong>4. Acceptable use.</strong> You agree not to use this app for any unlawful purpose and to comply with any local laws regarding record-keeping, debt collection, and consumer protection that apply to your business.</p>
+      <p><strong>5. Changes.</strong> We may update these terms as the app evolves. Continued use of the app after an update means you accept the revised terms.</p>
+      <p><strong>6. Contact.</strong> Questions about these terms can be sent through the Support Contact details in Settings.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ================= SHEET: Privacy Policy ================= -->
+<div class="overlay" id="privacySheet">
+  <div class="sheet">
+    <div class="grabber"></div>
+    <div class="sheet-header"><h2>Privacy Policy</h2><button class="iconbtn" data-close-sheet>✕</button></div>
+    <div class="legal-text">
+      <p><strong>Last updated: August 2026</strong></p>
+      <p>Duka Ledger is built to be offline-first and local-only. This policy explains exactly what that means.</p>
+      <p><strong>1. No server, no collection.</strong> Duka Ledger has no backend server. Customer names, phone numbers, debts, payments, and business settings are stored exclusively in your device's local browser storage (IndexedDB). Nothing is uploaded anywhere by this app.</p>
+      <p><strong>2. Contacts access.</strong> If you use "Import from Contacts," your device's contact picker is used only to fill in a name and phone number you choose. The app never reads your full contact list and never stores contacts you don't explicitly import as customers.</p>
+      <p><strong>3. Notifications.</strong> If you enable push notifications, your browser handles this permission directly. We do not use any third-party push or analytics service — notifications are generated entirely on your device.</p>
+      <p><strong>4. Backups.</strong> When you export a backup, a JSON file is created and saved directly to your device through your browser's normal download mechanism. We never see or receive a copy of this file.</p>
+      <p><strong>5. No tracking.</strong> We do not use analytics, advertising SDKs, or third-party tracking scripts of any kind in this app.</p>
+      <p><strong>6. Deleting your data.</strong> Clearing your browser or app storage, or uninstalling the app, permanently deletes all records. Export a backup first if you want to keep them.</p>
+      <p><strong>7. Contact.</strong> Questions about this policy can be sent through the Support Contact details in Settings.</p>
+    </div>
+  </div>
+</div>
+
 <!-- ================= SHEET: About Duka Ledger ================= -->
 <div class="overlay" id="aboutSheet">
   <div class="sheet">
@@ -429,6 +522,7 @@
 <script src="./db.js"></script>
 <script src="./utils.js"></script>
 <script src="./lock.js"></script>
+<script src="./sound.js"></script>
 <script src="./app.js"></script>
 <script src="./customers.js"></script>
 <script src="./profile.js"></script>
@@ -437,6 +531,8 @@
 <script src="./statement.js"></script>
 <script src="./settings.js"></script>
 <script src="./about.js"></script>
+<script src="./notifications.js"></script>
+<script src="./history.js"></script>
 <script src="./backup.js"></script>
 </body>
 </html>

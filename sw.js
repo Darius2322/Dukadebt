@@ -3,7 +3,7 @@
    app loads and works with no network connection at all.
    ========================================================= */
 
-const CACHE_NAME = 'duka-ledger-v3';
+const CACHE_NAME = 'duka-ledger-v4';
 
 const CORE_ASSETS = [
   './',
@@ -13,6 +13,7 @@ const CORE_ASSETS = [
   './db.js',
   './utils.js',
   './lock.js',
+  './sound.js',
   './app.js',
   './customers.js',
   './profile.js',
@@ -21,6 +22,8 @@ const CORE_ASSETS = [
   './statement.js',
   './settings.js',
   './about.js',
+  './notifications.js',
+  './history.js',
   './backup.js',
   './icon-72.png',
   './icon-96.png',
@@ -38,8 +41,13 @@ self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => cache.addAll(CORE_ASSETS))
-      .then(() => self.skipWaiting())
   );
+  // Note: no self.skipWaiting() here on purpose. On a brand-new install
+  // (no prior service worker) the browser activates this worker right
+  // away regardless. On an *update*, this lets the new worker sit in
+  // "waiting" until the person taps "Update Now" in the app, which
+  // posts SKIP_WAITING below — that's what shows the update banner
+  // instead of silently swapping the app out from under them.
 });
 
 self.addEventListener('activate', (event) => {
@@ -53,6 +61,12 @@ self.addEventListener('activate', (event) => {
 // Cache-first strategy for all app-shell requests, with a network
 // fallback that re-populates the cache. Navigation requests fall
 // back to the cached index.html so the app still opens offline.
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+});
+
 self.addEventListener('fetch', (event) => {
   const req = event.request;
   if (req.method !== 'GET') return;

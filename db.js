@@ -6,12 +6,13 @@
    ========================================================= */
 
 const DB_NAME = 'duka-ledger';
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 
 const STORES = {
   customers: 'customers',
   transactions: 'transactions',
-  settings: 'settings'
+  settings: 'settings',
+  activity: 'activity'
 };
 
 let dbPromise = null;
@@ -38,6 +39,11 @@ function openDB() {
         transactions.createIndex('createdAt', 'createdAt', { unique: false });
 
         db.createObjectStore(STORES.settings, { keyPath: 'id' });
+      }
+      if (oldVersion < 2) {
+        const activity = db.createObjectStore(STORES.activity, { keyPath: 'id' });
+        activity.createIndex('timestamp', 'timestamp', { unique: false });
+        activity.createIndex('notify', 'notify', { unique: false });
       }
       // Future schema migrations append here as `if (oldVersion < N) { ... }`
     };
@@ -214,6 +220,8 @@ const DB = {
       receiptFooter: 'Thank you for your business.',
       theme: 'system',
       allowOverpayment: false,
+      soundEnabled: true,
+      pushEnabled: false,
       pochiNumber: '',
       paybillNumber: '',
       paybillAccount: '',
@@ -239,18 +247,57 @@ const DB = {
     });
   },
 
+  // ---------- Activity log (History + Notifications) ----------
+  async logActivity(type, message, opts = {}) {
+    const entry = {
+      id: uid(),
+      type,
+      message,
+      timestamp: new Date().toISOString(),
+      notify: opts.notify !== false,
+      read: false
+    };
+    await tx([STORES.activity], 'readwrite', (t) => { t.objectStore(STORES.activity).add(entry); });
+    return entry;
+  },
+
+  async getActivity(limit = 500) {
+    const rows = await tx([STORES.activity], 'readonly', (t) => reqToPromise(t.objectStore(STORES.activity).getAll()));
+    return rows.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)).slice(0, limit);
+  },
+
+  async getUnreadNotificationCount() {
+    const rows = await this.getActivity(1000);
+    return rows.filter(r => r.notify && !r.read).length;
+  },
+
+  async markAllNotificationsRead() {
+    return tx([STORES.activity], 'readwrite', async (t) => {
+      const store = t.objectStore(STORES.activity);
+      const rows = await reqToPromise(store.getAll());
+      for (const r of rows) {
+        if (r.notify && !r.read) store.put({ ...r, read: true });
+      }
+    });
+  },
+
+  async clearActivity() {
+    return tx([STORES.activity], 'readwrite', (t) => t.objectStore(STORES.activity).clear());
+  },
+
   // ---------- Backup / Restore ----------
   async exportAll() {
-    const [customers, transactions, settings] = await Promise.all([
+    const [customers, transactions, settings, activity] = await Promise.all([
       this.getAllCustomers(),
       this.getAllTransactions(),
-      this.getSettings()
+      this.getSettings(),
+      this.getActivity(5000)
     ]);
     return {
       app: 'duka-ledger',
       exportedAt: new Date().toISOString(),
       version: DB_VERSION,
-      data: { customers, transactions, settings }
+      data: { customers, transactions, settings, activity }
     };
   },
 
@@ -258,7 +305,7 @@ const DB = {
     if (!payload || typeof payload !== 'object' || !payload.data) {
       throw new Error('This file is not a valid backup.');
     }
-    const { customers, transactions, settings } = payload.data;
+    const { customers, transactions, settings, activity } = payload.data;
     if (!Array.isArray(customers) || !Array.isArray(transactions)) {
       throw new Error('Backup file is missing customers or transactions.');
     }
@@ -271,18 +318,21 @@ const DB = {
       }
     }
 
-    return tx([STORES.customers, STORES.transactions, STORES.settings], 'readwrite', async (t) => {
+    return tx([STORES.customers, STORES.transactions, STORES.settings, STORES.activity], 'readwrite', async (t) => {
       const cStore = t.objectStore(STORES.customers);
       const tStore = t.objectStore(STORES.transactions);
       const sStore = t.objectStore(STORES.settings);
+      const aStore = t.objectStore(STORES.activity);
 
       await reqToPromise(cStore.clear());
       await reqToPromise(tStore.clear());
       await reqToPromise(sStore.clear());
+      await reqToPromise(aStore.clear());
 
       for (const c of customers) cStore.put(c);
       for (const tr of transactions) tStore.put(tr);
       if (settings) sStore.put({ ...settings, id: 'default' });
+      if (Array.isArray(activity)) for (const a of activity) aStore.put(a);
     });
   }
 };

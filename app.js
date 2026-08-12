@@ -21,6 +21,8 @@ async function init() {
   wireFab();
   wireTopbar();
   wireOverlayDismiss();
+  wireScrollTop();
+  wireSwipeNav();
   updateConnectionPill();
   window.addEventListener('online', updateConnectionPill);
   window.addEventListener('offline', updateConnectionPill);
@@ -47,9 +49,50 @@ async function init() {
   }
 
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js').catch(e => console.warn('SW registration failed', e));
+    registerServiceWorkerWithUpdateCheck();
   }
   wireInstallPrompt();
+}
+
+// ---------- App update detection ----------
+function registerServiceWorkerWithUpdateCheck() {
+  navigator.serviceWorker.register('./sw.js').then((reg) => {
+    // A worker already waiting (e.g. update happened while app was closed).
+    if (reg.waiting && navigator.serviceWorker.controller) {
+      showUpdateBanner(reg);
+    }
+    reg.addEventListener('updatefound', () => {
+      const installing = reg.installing;
+      if (!installing) return;
+      installing.addEventListener('statechange', () => {
+        if (installing.state === 'installed' && navigator.serviceWorker.controller) {
+          // A previous SW was already controlling the page, so this is a genuine update.
+          showUpdateBanner(reg);
+        }
+      });
+    });
+    // Periodically check for a new version while the app is open.
+    setInterval(() => reg.update().catch(() => {}), 60 * 60 * 1000);
+  }).catch(e => console.warn('SW registration failed', e));
+
+  let refreshing = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (refreshing) return;
+    refreshing = true;
+    window.location.reload();
+  });
+}
+
+function showUpdateBanner(reg) {
+  const banner = document.getElementById('updateBanner');
+  banner.classList.add('show');
+  DB.logActivity('app_updated', 'A new version of Duka Ledger was downloaded and is ready to install').then(() => {
+    if (window.Notifications) Notifications.refreshBadge();
+  });
+  document.getElementById('updateNowBtn').onclick = () => {
+    if (reg.waiting) reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+    banner.classList.remove('show');
+  };
 }
 
 async function refreshData() {
@@ -102,6 +145,42 @@ function wireTopbar() {
     const next = current === 'light' ? 'dark' : current === 'dark' ? 'system' : 'light';
     Settings.setTheme(next);
   });
+}
+
+// ---------- Easy scrolling: back-to-top button + swipe between tabs ----------
+function wireScrollTop() {
+  const btn = document.getElementById('scrollTopBtn');
+  window.addEventListener('scroll', Utils.debounce(() => {
+    btn.classList.toggle('show', window.scrollY > 420);
+  }, 80));
+  btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+}
+
+const NAV_ORDER = ['dashboard', 'customers', 'transactions', 'reports', 'settings'];
+
+function wireSwipeNav() {
+  const main = document.getElementById('mainContent');
+  let startX = 0, startY = 0, tracking = false;
+
+  main.addEventListener('touchstart', (e) => {
+    if (document.querySelector('.overlay.active') || document.getElementById('lockScreen').style.display === 'flex') return;
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+    tracking = true;
+  }, { passive: true });
+
+  main.addEventListener('touchend', (e) => {
+    if (!tracking) return;
+    tracking = false;
+    const dx = e.changedTouches[0].clientX - startX;
+    const dy = e.changedTouches[0].clientY - startY;
+    if (Math.abs(dx) < 70 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
+
+    const idx = NAV_ORDER.indexOf(State.currentView === 'profile' ? 'customers' : State.currentView);
+    if (idx === -1) return;
+    if (dx < 0 && idx < NAV_ORDER.length - 1) switchView(NAV_ORDER[idx + 1]);
+    else if (dx > 0 && idx > 0) switchView(NAV_ORDER[idx - 1]);
+  }, { passive: true });
 }
 
 function updateConnectionPill() {

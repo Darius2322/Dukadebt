@@ -93,12 +93,15 @@ const Transactions = {
 
     try {
       const isoDate = Utils.combineDateTime(date, time);
+      const custName = (State.customers.find(c => c.id === this.activeCustomerId) || {}).name || 'a customer';
       if (this.editingId) {
         await DB.updateTransaction(this.editingId, { amount: Number(amount), description, date: isoDate, notes });
         Toast.show('Transaction updated', 'success');
+        await Sound.announce('debt_updated', 'Debt updated', `${custName}'s debt of ${Utils.formatMoney(amount)} was updated`);
       } else {
         await DB.addTransaction({ customerId: this.activeCustomerId, type: 'debt', amount: Number(amount), description, date: isoDate, notes });
         Toast.show('Debt recorded', 'success');
+        await Sound.announce('debt_added', 'Debt recorded', `${custName} now owes ${Utils.formatMoney(amount)}${description ? ' for ' + description : ''}`);
       }
       closeSheet('debtFormSheet');
       await afterDataChange();
@@ -159,12 +162,15 @@ const Transactions = {
 
     try {
       const isoDate = Utils.combineDateTime(date, time);
+      const custName = (State.customers.find(c => c.id === this.activeCustomerId) || {}).name || 'a customer';
       if (this.editingId) {
         await DB.updateTransaction(this.editingId, { amount: Number(amount), date: isoDate, notes, paymentMethod: method });
         Toast.show('Transaction updated', 'success');
+        await Sound.announce('payment_updated', 'Payment updated', `${custName}'s payment of ${Utils.formatMoney(amount)} was updated`);
       } else {
         await DB.addTransaction({ customerId: this.activeCustomerId, type: 'payment', amount: Number(amount), date: isoDate, notes, paymentMethod: method, description: 'Payment' });
         Toast.show('Payment recorded', 'success');
+        await Sound.announce('payment_added', 'Payment received', `${custName} paid ${Utils.formatMoney(amount)} via ${method}`);
       }
       closeSheet('paymentFormSheet');
       await afterDataChange();
@@ -219,8 +225,10 @@ const Transactions = {
     });
     if (!ok) return;
     try {
+      const custName = (State.customers.find(c => c.id === t.customerId) || {}).name || 'a customer';
       await DB.deleteTransaction(transactionId);
       Toast.show('Transaction deleted', 'success');
+      await Sound.announce('transaction_deleted', 'Transaction deleted', `A ${t.type} of ${Utils.formatMoney(t.amount)} for ${custName} was deleted`);
       closeSheet('debtFormSheet');
       closeSheet('paymentFormSheet');
       await afterDataChange();

@@ -70,8 +70,27 @@ const Customers = {
     document.getElementById('custAddress').value = customer ? customer.address : '';
     document.getElementById('custNotes').value = customer ? customer.notes : '';
     document.getElementById('custFormError').textContent = '';
+    const importBtn = document.getElementById('importContactBtn');
+    importBtn.style.display = (!customer && this.contactPickerSupported()) ? 'block' : 'none';
     openSheet('customerFormSheet');
     setTimeout(() => document.getElementById('custName').focus(), 200);
+  },
+
+  contactPickerSupported() {
+    return !!(navigator.contacts && navigator.contacts.select && window.ContactsManager);
+  },
+
+  async importFromContacts() {
+    try {
+      const contacts = await navigator.contacts.select(['name', 'tel'], { multiple: false });
+      if (!contacts || !contacts.length) return;
+      const c = contacts[0];
+      if (c.name && c.name.length) document.getElementById('custName').value = c.name[0];
+      if (c.tel && c.tel.length) document.getElementById('custPhone').value = c.tel[0];
+      Toast.show('Contact imported — check the details before saving', 'success');
+    } catch (err) {
+      if (err && err.name !== 'AbortError') Toast.show('Could not import from contacts', 'error');
+    }
   },
 
   async submitForm() {
@@ -88,9 +107,11 @@ const Customers = {
       if (this.editingId) {
         await DB.updateCustomer(this.editingId, { name, phone, address, notes });
         Toast.show('Customer updated', 'success');
+        await Sound.announce('customer_updated', 'Customer updated', `${name} was updated`);
       } else {
         await DB.addCustomer({ name, phone, address, notes });
         Toast.show('Customer added', 'success');
+        await Sound.announce('customer_added', 'Customer added', `${name} was added to your customers`);
       }
       closeSheet('customerFormSheet');
       await afterDataChange();
@@ -116,6 +137,7 @@ const Customers = {
     try {
       await DB.deleteCustomer(customerId);
       Toast.show('Customer deleted', 'success');
+      await Sound.announce('customer_deleted', 'Customer deleted', `${customer.name} and their records were deleted`);
       if (State.currentCustomerId === customerId) {
         State.currentCustomerId = null;
         switchView('customers');
@@ -131,6 +153,7 @@ document.addEventListener('DOMContentLoaded', () => {
   Customers.wireSearch();
   document.getElementById('addCustomerBtn').addEventListener('click', () => Customers.openForm());
   document.getElementById('customerFormSave').addEventListener('click', () => Customers.submitForm());
+  document.getElementById('importContactBtn').addEventListener('click', () => Customers.importFromContacts());
 });
 
 window.Customers = Customers;
