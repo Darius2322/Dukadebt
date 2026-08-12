@@ -581,6 +581,37 @@ table.stmt-table td.num, table.stmt-table th.num{ text-align:right; font-family:
   padding:9px 14px; border-radius:999px; cursor:pointer; flex:none;
 }
 
+/* =================== More grid (home page) =================== */
+.more-grid{
+  display:grid; grid-template-columns:1fr 1fr; gap:10px;
+  margin-bottom:8px;
+}
+.more-tile{
+  background:var(--paper-raised);
+  border:1px solid var(--rule);
+  border-radius:var(--radius);
+  padding:16px 14px;
+  cursor:pointer;
+  position:relative;
+  overflow:hidden;
+  transition:transform .1s ease;
+}
+.more-tile::before{
+  content:"";
+  position:absolute; left:0; top:0; bottom:0; width:3px;
+  background:var(--brand);
+  opacity:.55;
+}
+.more-tile:active{ transform:scale(0.97); }
+.more-ic{
+  width:38px; height:38px; border-radius:11px;
+  background:var(--brand-tint); color:var(--brand-dark);
+  display:flex; align-items:center; justify-content:center;
+  font-size:17px; margin-bottom:10px;
+}
+.more-label{ font-weight:700; font-size:14.5px; color:var(--ink); }
+.more-sub{ font-size:11.5px; color:var(--ink-faint); margin-top:2px; }
+
 /* =================== Misc =================== */
 .legal-text{ font-size:13px; line-height:1.6; color:var(--ink-soft); max-height:65vh; overflow-y:auto; }
 .legal-text p{ margin:0 0 12px; }
