@@ -73,6 +73,7 @@ const Transactions = {
     document.getElementById('debtAmount').value = '';
     document.getElementById('debtDescription').value = '';
     document.getElementById('debtDate').value = Utils.todayInputValue();
+    document.getElementById('debtTime').value = Utils.nowTimeValue();
     document.getElementById('debtNotes').value = '';
     document.getElementById('debtFormError').textContent = '';
     document.getElementById('debtDeleteBtn').style.display = 'none';
@@ -84,13 +85,14 @@ const Transactions = {
     const amount = document.getElementById('debtAmount').value;
     const description = Utils.clean(document.getElementById('debtDescription').value, 200);
     const date = document.getElementById('debtDate').value || Utils.todayInputValue();
+    const time = document.getElementById('debtTime').value || Utils.nowTimeValue();
     const notes = Utils.clean(document.getElementById('debtNotes').value, 500);
     const errEl = document.getElementById('debtFormError');
 
     if (!Utils.isPositiveNumber(amount)) { errEl.textContent = 'Enter an amount greater than zero.'; return; }
 
     try {
-      const isoDate = new Date(date + 'T12:00:00').toISOString();
+      const isoDate = Utils.combineDateTime(date, time);
       if (this.editingId) {
         await DB.updateTransaction(this.editingId, { amount: Number(amount), description, date: isoDate, notes });
         Toast.show('Transaction updated', 'success');
@@ -116,6 +118,7 @@ const Transactions = {
     document.getElementById('paymentOutstanding').textContent = c ? Utils.formatMoney(Math.max(c.balance || 0, 0)) : Utils.formatMoney(0);
     document.getElementById('paymentAmount').value = '';
     document.getElementById('paymentDate').value = Utils.todayInputValue();
+    document.getElementById('paymentTime').value = Utils.nowTimeValue();
     document.getElementById('paymentNotes').value = '';
     document.getElementById('paymentFormError').textContent = '';
     document.getElementById('paymentDeleteBtn').style.display = 'none';
@@ -127,6 +130,7 @@ const Transactions = {
   async submitPaymentForm() {
     const amount = document.getElementById('paymentAmount').value;
     const date = document.getElementById('paymentDate').value || Utils.todayInputValue();
+    const time = document.getElementById('paymentTime').value || Utils.nowTimeValue();
     const notes = Utils.clean(document.getElementById('paymentNotes').value, 500);
     const method = document.querySelector('#paymentMethodSeg button.active')?.dataset.method || 'Cash';
     const errEl = document.getElementById('paymentFormError');
@@ -154,7 +158,7 @@ const Transactions = {
     }
 
     try {
-      const isoDate = new Date(date + 'T12:00:00').toISOString();
+      const isoDate = Utils.combineDateTime(date, time);
       if (this.editingId) {
         await DB.updateTransaction(this.editingId, { amount: Number(amount), date: isoDate, notes, paymentMethod: method });
         Toast.show('Transaction updated', 'success');
@@ -183,6 +187,7 @@ const Transactions = {
       document.getElementById('debtAmount').value = t.amount;
       document.getElementById('debtDescription').value = t.description || '';
       document.getElementById('debtDate').value = Utils.toInputDate(t.date);
+      document.getElementById('debtTime').value = Utils.toInputTime(t.date);
       document.getElementById('debtNotes').value = t.notes || '';
       document.getElementById('debtFormError').textContent = '';
       document.getElementById('debtDeleteBtn').style.display = 'block';
@@ -193,6 +198,7 @@ const Transactions = {
       document.getElementById('paymentOutstanding').textContent = c ? Utils.formatMoney(Math.max(c.balance || 0, 0)) : Utils.formatMoney(0);
       document.getElementById('paymentAmount').value = t.amount;
       document.getElementById('paymentDate').value = Utils.toInputDate(t.date);
+      document.getElementById('paymentTime').value = Utils.toInputTime(t.date);
       document.getElementById('paymentNotes').value = t.notes || '';
       document.getElementById('paymentFormError').textContent = '';
       document.getElementById('paymentDeleteBtn').style.display = 'block';
@@ -270,7 +276,7 @@ const Transactions = {
         </div>
         <div class="row-end">
           <div class="amt num ${t.type === 'payment' ? 'paid' : 'owed'}">${Utils.esc(Utils.formatSignedMoney(t.amount, t.type))}</div>
-          <div class="meta">${Utils.esc(Utils.formatDate(t.date))}</div>
+          <div class="meta">${Utils.esc(Utils.formatDateTimeShort(t.date))}</div>
         </div>
       </div>`;
     }).join('')}</div>`;

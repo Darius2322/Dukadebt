@@ -213,7 +213,16 @@ const DB = {
       currency: 'KSh',
       receiptFooter: 'Thank you for your business.',
       theme: 'system',
-      allowOverpayment: false
+      allowOverpayment: false,
+      pochiNumber: '',
+      paybillNumber: '',
+      paybillAccount: '',
+      supportPhone: '',
+      supportEmail: '',
+      pinHash: '',
+      pinSalt: '',
+      biometricEnabled: false,
+      biometricCredentialId: ''
     };
     await tx([STORES.settings], 'readwrite', (t) => t.objectStore(STORES.settings).put(defaults));
     return defaults;

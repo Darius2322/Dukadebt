@@ -25,6 +25,15 @@ const Utils = {
     return d.toLocaleDateString('en-GB', opts || { day: '2-digit', month: 'short', year: 'numeric' });
   },
 
+  formatDateTimeShort(iso) {
+    if (!iso) return '—';
+    const d = new Date(iso);
+    if (isNaN(d)) return '—';
+    const date = d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+    const time = d.toLocaleTimeString('en-GB', { hour: 'numeric', minute: '2-digit', hour12: true });
+    return `${date} · ${time}`;
+  },
+
   formatDateTime(iso) {
     if (!iso) return '—';
     const d = new Date(iso);
@@ -36,6 +45,24 @@ const Utils = {
     const d = new Date();
     const tz = d.getTimezoneOffset() * 60000;
     return new Date(d - tz).toISOString().slice(0, 10);
+  },
+
+  nowTimeValue() {
+    const d = new Date();
+    return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+  },
+
+  toInputTime(iso) {
+    if (!iso) return Utils.nowTimeValue();
+    const d = new Date(iso);
+    if (isNaN(d)) return Utils.nowTimeValue();
+    return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+  },
+
+  combineDateTime(dateStr, timeStr) {
+    const date = dateStr || Utils.todayInputValue();
+    const time = timeStr || Utils.nowTimeValue();
+    return new Date(`${date}T${time}:00`).toISOString();
   },
 
   toInputDate(iso) {

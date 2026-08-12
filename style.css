@@ -66,26 +66,6 @@ body{
   font-family:var(--font-body);
   -webkit-font-smoothing:antialiased;
   transition:background .25s ease, color .25s ease;
-  /* subtle ruled-paper texture */
-  background-image:
-    repeating-linear-gradient(
-      to bottom,
-      transparent,
-      transparent 35px,
-      var(--rule) 35px,
-      var(--rule) 36px
-    );
-  background-attachment:local;
-}
-[data-theme="dark"] body{
-  background-image:
-    repeating-linear-gradient(
-      to bottom,
-      transparent,
-      transparent 35px,
-      var(--rule) 35px,
-      var(--rule) 36px
-    );
 }
 
 h1,h2,h3,.display{ font-family:var(--font-display); letter-spacing:.01em; }
@@ -213,11 +193,7 @@ main{ padding:16px; }
   position:relative;
   overflow:hidden;
 }
-.hero-total::after{
-  content:"";
-  position:absolute; inset:0;
-  background-image:repeating-linear-gradient(to bottom, transparent, transparent 34px, rgba(255,255,255,0.06) 34px, rgba(255,255,255,0.06) 35px);
-}
+
 .hero-total .label{ font-size:12px; letter-spacing:.08em; text-transform:uppercase; opacity:.85; position:relative; }
 .hero-total .value{ font-size:34px; font-weight:700; margin-top:4px; position:relative; }
 .hero-total .foot{ display:flex; gap:16px; margin-top:14px; position:relative; font-size:12px; opacity:.92; }
@@ -509,6 +485,38 @@ table.stmt-table td.num, table.stmt-table th.num{ text-align:right; font-family:
   .statement-totals .row.final{ color:#B5471B !important; }
   table.stmt-table td, table.stmt-table th{ border-color:#ddd !important; }
 }
+
+/* =================== Lock screen =================== */
+#lockScreen{
+  position:fixed; inset:0; z-index:200;
+  background:var(--paper);
+  display:flex; align-items:center; justify-content:center;
+  padding:24px;
+}
+.lock-inner{ width:100%; max-width:340px; text-align:center; }
+.lock-brand{ margin-bottom:26px; }
+.lock-title{ font-family:var(--font-display); font-size:22px; font-weight:700; margin-bottom:2px; }
+.pin-dots{ display:flex; justify-content:center; gap:16px; margin-bottom:8px; }
+.pin-dot{
+  width:14px; height:14px; border-radius:50%;
+  border:2px solid var(--rule); background:transparent; transition:background .15s ease, border-color .15s ease;
+}
+.pin-dot.filled{ background:var(--brand); border-color:var(--brand); }
+.pin-dot.shake{ animation:shake .3s ease; }
+@keyframes shake{ 0%,100%{transform:translateX(0);} 25%{transform:translateX(-6px);} 75%{transform:translateX(6px);} }
+.lock-error{ color:var(--danger); font-size:12.5px; height:18px; margin-bottom:18px; }
+.pin-pad{
+  display:grid; grid-template-columns:repeat(3, 1fr); gap:14px;
+  max-width:280px; margin:0 auto;
+}
+.pin-pad button{
+  aspect-ratio:1; border-radius:50%;
+  border:1px solid var(--rule); background:var(--paper-raised);
+  font-size:20px; font-weight:600; color:var(--ink);
+  cursor:pointer;
+}
+.pin-pad button:active{ background:var(--brand-tint); }
+.pin-pad button[data-key="back"], .pin-pad button[data-key="bio"]{ border:none; background:none; font-size:19px; color:var(--ink-soft); }
 
 /* =================== Misc =================== */
 .divider{ height:1px; background:var(--rule); margin:18px 0; border:none; }

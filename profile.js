@@ -82,7 +82,7 @@ const Profile = {
     }
     return `<div class="timeline">${items.map(t => `
       <div class="tl-item ${t.type}">
-        <div class="tl-date">${Utils.esc(Utils.formatDate(t.date))}</div>
+        <div class="tl-date">${Utils.esc(Utils.formatDateTimeShort(t.date))}</div>
         <div class="tl-card">
           <div class="tl-top">
             <div>

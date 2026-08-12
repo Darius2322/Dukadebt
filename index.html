@@ -21,6 +21,31 @@
 
 <div id="toastWrap" class="toast-wrap"></div>
 
+<!-- ================= LOCK SCREEN ================= -->
+<div id="lockScreen" style="display:none;">
+  <div class="lock-inner">
+    <div class="lock-brand">
+      <div class="avatar" style="width:64px; height:64px; margin:0 auto 14px; font-size:22px;">DL</div>
+      <div class="lock-title">Duka Ledger</div>
+      <div class="muted">Enter your PIN to unlock</div>
+    </div>
+
+    <div class="pin-dots" id="pinDots">
+      <span class="pin-dot"></span><span class="pin-dot"></span><span class="pin-dot"></span><span class="pin-dot"></span>
+    </div>
+    <div class="lock-error" id="lockError">&nbsp;</div>
+
+    <div class="pin-pad" id="pinPad">
+      <button data-key="1">1</button><button data-key="2">2</button><button data-key="3">3</button>
+      <button data-key="4">4</button><button data-key="5">5</button><button data-key="6">6</button>
+      <button data-key="7">7</button><button data-key="8">8</button><button data-key="9">9</button>
+      <button data-key="bio" id="pinBioBtn">👆</button>
+      <button data-key="0">0</button>
+      <button data-key="back">⌫</button>
+    </div>
+  </div>
+</div>
+
 <div id="app">
 
   <header class="topbar">
@@ -119,6 +144,14 @@
       </div>
 
       <div class="settings-group">
+        <h3>Payment Methods (shown on receipts)</h3>
+        <div class="field"><label>M-Pesa Pochi / Till Number</label><input type="text" id="settingsPochiNumber" placeholder="e.g. 5123456" inputmode="numeric"></div>
+        <div class="field"><label>Paybill Number</label><input type="text" id="settingsPaybillNumber" placeholder="e.g. 400200" inputmode="numeric"></div>
+        <div class="field"><label>Paybill Account Number</label><input type="text" id="settingsPaybillAccount" placeholder="Optional, e.g. your shop name"></div>
+        <div class="hint">If filled in, these appear on every receipt and statement so customers know how to pay you.</div>
+      </div>
+
+      <div class="settings-group">
         <h3>Appearance</h3>
         <div class="seg" id="themeSeg">
           <button data-theme="light">Light</button>
@@ -140,6 +173,36 @@
         <input type="file" id="restoreFileInput" accept="application/json,.json" style="display:none;">
         <div class="muted" id="restoreFileName" style="margin:8px 0;">No file selected</div>
         <button class="btn btn-danger" id="restoreConfirmBtn" disabled>Restore &amp; Replace All Data</button>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="settings-group">
+        <h3>Security</h3>
+        <div id="securityStatusText" class="muted" style="margin-bottom:12px;">No PIN set — anyone who opens this app can see your records.</div>
+        <button class="btn btn-outline" id="setPinBtn">Set PIN Lock</button>
+        <div style="height:8px;" id="pinButtonsGap"></div>
+        <button class="btn btn-danger" id="removePinBtn" style="display:none;">Remove PIN Lock</button>
+        <div style="height:10px;"></div>
+        <label class="checkline" id="biometricRow" style="display:none;">
+          <input type="checkbox" id="settingsBiometric"> Also allow unlocking with fingerprint / face
+        </label>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="settings-group">
+        <h3>Support Contact</h3>
+        <p class="muted" style="margin-bottom:12px;">Shown on the About screen so customers or staff can reach you.</p>
+        <div class="field"><label>Support Phone (WhatsApp)</label><input type="tel" id="settingsSupportPhone" placeholder="e.g. 0700 000 000"></div>
+        <div class="field"><label>Support Email</label><input type="text" id="settingsSupportEmail" placeholder="e.g. you@example.com"></div>
+      </div>
+
+      <div class="settings-group">
+        <div class="action-row" id="aboutMenuBtn" style="border:1px solid var(--rule); border-bottom:1px solid var(--rule); border-radius:var(--radius); padding:14px;">
+          <div class="ic">ℹ️</div>
+          <div><div class="t">About Duka Ledger</div><div class="s">Founder, support & version info</div></div>
+        </div>
       </div>
 
       <div class="divider"></div>
@@ -247,7 +310,10 @@
       <div class="currency-input"><span class="prefix" id="debtCurrencyPrefix">KSh</span><input type="number" inputmode="decimal" id="debtAmount" placeholder="0"></div>
     </div>
     <div class="field"><label>Description / Item</label><input type="text" id="debtDescription" placeholder="e.g. Cement and sand"></div>
-    <div class="field"><label>Date</label><input type="date" id="debtDate"></div>
+    <div class="btn-row">
+      <div class="field" style="flex:1;"><label>Date</label><input type="date" id="debtDate"></div>
+      <div class="field" style="flex:1;"><label>Time</label><input type="time" id="debtTime"></div>
+    </div>
     <div class="field"><label>Notes</label><textarea id="debtNotes" placeholder="Optional"></textarea></div>
     <div class="muted" id="debtFormError" style="color:var(--danger); margin-bottom:10px;"></div>
     <button class="btn btn-primary" id="debtFormSave">Save Debt</button>
@@ -276,7 +342,10 @@
         <button data-method="Other">Other</button>
       </div>
     </div>
-    <div class="field"><label>Payment Date</label><input type="date" id="paymentDate"></div>
+    <div class="btn-row">
+      <div class="field" style="flex:1;"><label>Payment Date</label><input type="date" id="paymentDate"></div>
+      <div class="field" style="flex:1;"><label>Time</label><input type="time" id="paymentTime"></div>
+    </div>
     <div class="field"><label>Note</label><textarea id="paymentNotes" placeholder="Optional"></textarea></div>
     <div class="muted" id="paymentFormError" style="color:var(--danger); margin-bottom:10px;"></div>
     <button class="btn btn-primary" id="paymentFormSave">Save Payment</button>
@@ -291,10 +360,56 @@
     <div class="grabber"></div>
     <div class="sheet-header"><h2>Statement</h2><button class="iconbtn" data-close-sheet>✕</button></div>
     <div id="statementContent"></div>
-    <div class="btn-row" style="margin-top:16px;">
+    <button class="btn btn-primary" id="statementShareBtn" style="margin-top:16px; background:#25D366; border-color:#25D366;">💬 Share via WhatsApp</button>
+    <div class="btn-row" style="margin-top:10px;">
+      <button class="btn btn-outline" id="statementDownloadBtn">⭳ Save as Image</button>
       <button class="btn btn-outline" id="statementPrintBtn">🖨 Print</button>
-      <button class="btn btn-primary" id="statementDownloadBtn">⭳ Save</button>
     </div>
+  </div>
+</div>
+
+<!-- ================= SHEET: Set PIN ================= -->
+<div class="overlay" id="setPinSheet">
+  <div class="sheet">
+    <div class="grabber"></div>
+    <div class="sheet-header"><h2 id="setPinTitle">Set PIN Lock</h2><button class="iconbtn" data-close-sheet>✕</button></div>
+    <p class="muted" style="margin-bottom:16px;">Choose a 4-digit PIN. You'll need it to open Duka Ledger.</p>
+    <div class="field"><label>New PIN</label><input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6" id="newPinInput" placeholder="••••"></div>
+    <div class="field"><label>Confirm PIN</label><input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6" id="confirmPinInput" placeholder="••••"></div>
+    <div class="muted" id="setPinError" style="color:var(--danger); margin-bottom:10px;"></div>
+    <button class="btn btn-primary" id="setPinSaveBtn">Save PIN</button>
+  </div>
+</div>
+
+<!-- ================= SHEET: About Duka Ledger ================= -->
+<div class="overlay" id="aboutSheet">
+  <div class="sheet">
+    <div class="grabber"></div>
+    <div class="sheet-header"><h2>About Duka Ledger</h2><button class="iconbtn" data-close-sheet>✕</button></div>
+
+    <div style="text-align:center; padding:6px 0 18px;">
+      <div class="avatar" style="width:56px; height:56px; margin:0 auto 10px; font-size:20px;">DL</div>
+      <div style="font-family:var(--font-display); font-size:19px; font-weight:700;">Duka Ledger</div>
+      <div class="muted" style="margin-top:2px;">Offline Debt Book</div>
+    </div>
+
+    <div class="card" style="margin-bottom:14px;">
+      <div class="muted" style="text-transform:uppercase; letter-spacing:.06em; font-size:11px; font-weight:700; margin-bottom:6px;">Founder</div>
+      <div style="font-weight:700; font-size:15px;">Darius Momanyi</div>
+      <div class="muted" style="margin-top:2px;">Founder &amp; Developer, Duka Ledger</div>
+    </div>
+
+    <div class="card" style="margin-bottom:14px;">
+      <div class="muted" style="text-transform:uppercase; letter-spacing:.06em; font-size:11px; font-weight:700; margin-bottom:10px;">Support &amp; Contact</div>
+      <div id="aboutSupportRows"></div>
+    </div>
+
+    <div class="card">
+      <div class="muted" style="text-transform:uppercase; letter-spacing:.06em; font-size:11px; font-weight:700; margin-bottom:6px;">Website</div>
+      <a href="https://dmn-solution.vercel.app" target="_blank" rel="noopener" style="color:var(--brand); font-weight:600; font-size:14.5px;">dmn-solution.vercel.app</a>
+    </div>
+
+    <div class="muted" style="text-align:center; margin-top:18px; font-size:12px;">Duka Ledger keeps every record on your device. No data ever leaves your phone.</div>
   </div>
 </div>
 
@@ -313,6 +428,7 @@
 
 <script src="./db.js"></script>
 <script src="./utils.js"></script>
+<script src="./lock.js"></script>
 <script src="./app.js"></script>
 <script src="./customers.js"></script>
 <script src="./profile.js"></script>
@@ -320,6 +436,7 @@
 <script src="./reports.js"></script>
 <script src="./statement.js"></script>
 <script src="./settings.js"></script>
+<script src="./about.js"></script>
 <script src="./backup.js"></script>
 </body>
 </html>

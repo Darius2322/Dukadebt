@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', init);
 
 async function init() {
   Toast.init();
+  document.getElementById('app').style.display = 'none';
   wireNav();
   wireFab();
   wireTopbar();
@@ -28,6 +29,10 @@ async function init() {
     State.settings = await DB.getSettings();
     Utils.currencySymbol = State.settings.currency || 'KSh';
     applyTheme(State.settings.theme || 'system');
+
+    await Lock.ensureUnlocked();
+    document.getElementById('app').style.display = '';
+
     updateCurrencyLabels();
     await refreshData();
     renderDashboard();
@@ -37,6 +42,7 @@ async function init() {
     Settings.render();
   } catch (err) {
     console.error(err);
+    document.getElementById('app').style.display = '';
     showFatalError(err);
   }
 

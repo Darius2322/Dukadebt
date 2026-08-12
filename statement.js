@@ -47,7 +47,7 @@ const Statement = {
           <tbody>
             ${rows.length ? rows.map(r => `
               <tr>
-                <td>${Utils.esc(Utils.formatDate(r.date))}</td>
+                <td>${Utils.esc(Utils.formatDate(r.date))}<br><span style="color:var(--ink-faint); font-size:10px;">${Utils.esc(Utils.toInputTime(r.date))}</span></td>
                 <td>${Utils.esc(r.description || (r.type === 'payment' ? (r.paymentMethod || 'Payment') : 'Debt'))}</td>
                 <td class="num">${r.type === 'debt' || r.type === 'adjustment' ? Utils.esc(Utils.formatMoney(r.amount)) : ''}</td>
                 <td class="num">${r.type === 'payment' ? Utils.esc(Utils.formatMoney(r.amount)) : ''}</td>
@@ -72,37 +72,246 @@ const Statement = {
     window.print();
   },
 
-  download() {
+  // ---------- Canvas receipt rendering (shareable image) ----------
+  buildCanvas() {
+    const customer = State.customers.find(c => c.id === this.currentCustomerId);
+    const settings = State.settings;
+    if (!customer) return null;
+
+    const txns = State.transactions
+      .filter(t => t.customerId === customer.id)
+      .sort((a, b) => new Date(a.date) - new Date(b.date));
+    let running = 0;
+    const rows = txns.map(t => {
+      if (t.type === 'payment') running -= t.amount; else running += t.amount;
+      return { ...t, running };
+    });
+
+    const scale = 2; // crisp on phone screens
+    const W = 720;
+    const padX = 36;
+    const rowH = 46;
+    const headerH = 165;
+    const totalsH = 116;
+    const paymentInfoLines = [];
+    if (settings.pochiNumber) paymentInfoLines.push(`M-Pesa Pochi / Till: ${settings.pochiNumber}`);
+    if (settings.paybillNumber) paymentInfoLines.push(`Paybill: ${settings.paybillNumber}${settings.paybillAccount ? '  Acc: ' + settings.paybillAccount : ''}`);
+    const paymentInfoH = paymentInfoLines.length ? (34 + paymentInfoLines.length * 22) : 0;
+    const footerH = settings.receiptFooter ? 50 : 20;
+    const tableHeaderH = 36;
+    const H = headerH + tableHeaderH + Math.max(rows.length, 1) * rowH + totalsH + paymentInfoH + footerH + 30;
+
+    const canvas = document.createElement('canvas');
+    canvas.width = W * scale;
+    canvas.height = H * scale;
+    const ctx = canvas.getContext('2d');
+    ctx.scale(scale, scale);
+
+    const INK = '#16261F';
+    const INK_FAINT = '#8B9790';
+    const BRAND = '#2F6B4F';
+    const OWED = '#B5471B';
+    const RULE = '#E4DCC5';
+    const PAPER = '#FFFDF8';
+
+    ctx.fillStyle = PAPER;
+    ctx.fillRect(0, 0, W, H);
+
+    let y = 34;
+    ctx.textAlign = 'center';
+    ctx.fillStyle = INK;
+    ctx.font = '700 24px Georgia, serif';
+    ctx.fillText(settings.businessName || 'My Shop', W / 2, y);
+    y += 24;
+    ctx.font = '13px -apple-system, Roboto, sans-serif';
+    ctx.fillStyle = INK_FAINT;
+    const bizMeta = [settings.businessPhone, settings.businessLocation].filter(Boolean).join('   ·   ');
+    if (bizMeta) { ctx.fillText(bizMeta, W / 2, y); y += 20; }
+    ctx.fillText(`Statement generated ${Utils.formatDateTimeShort(new Date().toISOString())}`, W / 2, y);
+    y += 22;
+
+    ctx.strokeStyle = RULE;
+    ctx.setLineDash([4, 3]);
+    ctx.beginPath(); ctx.moveTo(padX, y); ctx.lineTo(W - padX, y); ctx.stroke();
+    ctx.setLineDash([]);
+    y += 30;
+
+    ctx.textAlign = 'left';
+    ctx.fillStyle = INK;
+    ctx.font = '700 17px -apple-system, Roboto, sans-serif';
+    ctx.fillText(customer.name, padX, y);
+    y += 20;
+    ctx.font = '13px -apple-system, Roboto, sans-serif';
+    ctx.fillStyle = INK_FAINT;
+    ctx.fillText(customer.phone || '', padX, y);
+    y = headerH;
+
+    // table header
+    const col = { date: padX, desc: padX + 150, debt: W - padX - 220, payment: W - padX - 130, balance: W - padX };
+    ctx.font = '700 11px -apple-system, Roboto, sans-serif';
+    ctx.fillStyle = INK_FAINT;
+    ctx.fillText('DATE', col.date, y);
+    ctx.fillText('DESCRIPTION', col.desc, y);
+    ctx.textAlign = 'right';
+    ctx.fillText('DEBT', col.debt, y);
+    ctx.fillText('PAYMENT', col.payment, y);
+    ctx.fillText('BALANCE', col.balance, y);
+    ctx.textAlign = 'left';
+    y += 12;
+    ctx.strokeStyle = RULE;
+    ctx.beginPath(); ctx.moveTo(padX, y); ctx.lineTo(W - padX, y); ctx.stroke();
+    y += 26;
+
+    if (!rows.length) {
+      ctx.fillStyle = INK_FAINT;
+      ctx.font = '13px -apple-system, Roboto, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('No transactions recorded', W / 2, y);
+      ctx.textAlign = 'left';
+      y += rowH;
+    } else {
+      for (const r of rows) {
+        ctx.font = '12px -apple-system, Roboto, sans-serif';
+        ctx.fillStyle = INK;
+        ctx.fillText(Utils.formatDate(r.date), col.date, y);
+        ctx.fillStyle = INK_FAINT;
+        ctx.font = '10.5px -apple-system, Roboto, sans-serif';
+        ctx.fillText(Utils.toInputTime(r.date), col.date, y + 14);
+
+        ctx.fillStyle = INK;
+        ctx.font = '12.5px -apple-system, Roboto, sans-serif';
+        let desc = r.description || (r.type === 'payment' ? (r.paymentMethod || 'Payment') : 'Debt');
+        if (desc.length > 26) desc = desc.slice(0, 24) + '…';
+        ctx.fillText(desc, col.desc, y);
+
+        ctx.font = '600 12.5px -apple-system, Roboto, sans-serif';
+        ctx.textAlign = 'right';
+        if (r.type === 'debt' || r.type === 'adjustment') {
+          ctx.fillStyle = OWED;
+          ctx.fillText(Utils.formatMoney(r.amount), col.debt, y);
+        }
+        if (r.type === 'payment') {
+          ctx.fillStyle = BRAND;
+          ctx.fillText(Utils.formatMoney(r.amount), col.payment, y);
+        }
+        ctx.fillStyle = INK;
+        ctx.font = '12.5px -apple-system, Roboto, sans-serif';
+        ctx.fillText(Utils.formatMoney(r.running), col.balance, y);
+        ctx.textAlign = 'left';
+        y += rowH;
+      }
+    }
+
+    y -= 14;
+    ctx.strokeStyle = RULE;
+    ctx.setLineDash([4, 3]);
+    ctx.beginPath(); ctx.moveTo(padX, y); ctx.lineTo(W - padX, y); ctx.stroke();
+    ctx.setLineDash([]);
+    y += 30;
+
+    const totalsRow = (label, value, color, bold) => {
+      ctx.textAlign = 'left';
+      ctx.font = (bold ? '700 15px' : '13px') + ' -apple-system, Roboto, sans-serif';
+      ctx.fillStyle = color || INK;
+      ctx.fillText(label, padX, y);
+      ctx.textAlign = 'right';
+      ctx.fillText(value, W - padX, y);
+      ctx.textAlign = 'left';
+      y += bold ? 26 : 22;
+    };
+    totalsRow('Total Debt', Utils.formatMoney(customer.totalBorrowed || 0), INK);
+    totalsRow('Total Paid', Utils.formatMoney(customer.totalPaid || 0), INK);
+    ctx.strokeStyle = RULE;
+    ctx.beginPath(); ctx.moveTo(padX, y - 8); ctx.lineTo(W - padX, y - 8); ctx.stroke();
+    totalsRow('Outstanding Balance', Utils.formatMoney(customer.balance || 0), OWED, true);
+
+    if (paymentInfoLines.length) {
+      y += 8;
+      ctx.textAlign = 'left';
+      ctx.font = '700 12px -apple-system, Roboto, sans-serif';
+      ctx.fillStyle = INK;
+      ctx.fillText('PAY VIA', padX, y);
+      y += 20;
+      ctx.font = '13px -apple-system, Roboto, sans-serif';
+      ctx.fillStyle = BRAND;
+      for (const line of paymentInfoLines) { ctx.fillText(line, padX, y); y += 22; }
+    }
+
+    if (settings.receiptFooter) {
+      y += 14;
+      ctx.textAlign = 'center';
+      ctx.font = 'italic 12px -apple-system, Roboto, sans-serif';
+      ctx.fillStyle = INK_FAINT;
+      ctx.fillText(settings.receiptFooter, W / 2, y);
+    }
+
+    return canvas;
+  },
+
+  canvasToBlob(canvas) {
+    return new Promise((resolve) => canvas.toBlob(resolve, 'image/png', 0.95));
+  },
+
+  async download() {
     const customer = State.customers.find(c => c.id === this.currentCustomerId);
     if (!customer) return;
-    const area = document.getElementById('statementPrintArea');
-    const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Statement - ${Utils.esc(customer.name)}</title>
-      <style>
-        body{ font-family:-apple-system,Segoe UI,Roboto,sans-serif; padding:24px; color:#16261F; }
-        table{ width:100%; border-collapse:collapse; font-size:13px; }
-        th,td{ padding:8px 6px; border-bottom:1px solid #ddd; text-align:left; }
-        th.num,td.num{ text-align:right; }
-        .head{ text-align:center; border-bottom:2px solid #16261F; padding-bottom:12px; margin-bottom:16px; }
-        .totals{ margin-top:16px; max-width:320px; margin-left:auto; }
-        .totals div{ display:flex; justify-content:space-between; padding:4px 0; }
-        .final{ font-weight:700; border-top:1px solid #333; padding-top:8px; }
-      </style></head><body>${area.innerHTML}</body></html>`;
-    const blob = new Blob([html], { type: 'text/html' });
+    const canvas = this.buildCanvas();
+    if (!canvas) return;
+    const blob = await this.canvasToBlob(canvas);
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `statement-${customer.name.replace(/\s+/g, '-').toLowerCase()}-${Utils.todayInputValue()}.html`;
+    a.download = `receipt-${customer.name.replace(/\s+/g, '-').toLowerCase()}-${Utils.todayInputValue()}.png`;
     document.body.appendChild(a);
     a.click();
     a.remove();
-    setTimeout(() => URL.revokeObjectURL(url), 2000);
-    Toast.show('Statement downloaded', 'success');
+    setTimeout(() => URL.revokeObjectURL(url), 3000);
+    Toast.show('Receipt downloaded', 'success');
+  },
+
+  async shareWhatsApp() {
+    const customer = State.customers.find(c => c.id === this.currentCustomerId);
+    if (!customer) return;
+
+    if (!navigator.onLine) {
+      Toast.show('Sharing needs an internet connection. The receipt is still saved offline.', 'error');
+      return;
+    }
+
+    const canvas = this.buildCanvas();
+    if (!canvas) return;
+    const blob = await this.canvasToBlob(canvas);
+    const filename = `receipt-${customer.name.replace(/\s+/g, '-').toLowerCase()}.png`;
+    const file = new File([blob], filename, { type: 'image/png' });
+    const summary = `${State.settings.businessName || 'My Shop'} — Statement for ${customer.name}\nOutstanding balance: ${Utils.formatMoney(customer.balance || 0)}`;
+
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      try {
+        await navigator.share({ files: [file], title: 'Statement', text: summary });
+        return;
+      } catch (err) {
+        if (err && err.name === 'AbortError') return; // user cancelled
+        // fall through to fallback below
+      }
+    }
+
+    // Fallback: no native file sharing available (e.g. desktop browser).
+    // Download the image and open WhatsApp with a prefilled text summary
+    // so the person can attach the downloaded image manually.
+    await this.download();
+    const phone = (customer.phone || '').replace(/[^0-9+]/g, '');
+    const waUrl = phone
+      ? `https://wa.me/${phone.replace(/^0/, '254').replace('+', '')}?text=${encodeURIComponent(summary)}`
+      : `https://wa.me/?text=${encodeURIComponent(summary)}`;
+    window.open(waUrl, '_blank');
+    Toast.show('Receipt downloaded — attach it to the WhatsApp chat that just opened', 'success');
   }
 };
 
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('statementPrintBtn').addEventListener('click', () => Statement.print());
   document.getElementById('statementDownloadBtn').addEventListener('click', () => Statement.download());
+  document.getElementById('statementShareBtn').addEventListener('click', () => Statement.shareWhatsApp());
 });
 
 window.Statement = Statement;
