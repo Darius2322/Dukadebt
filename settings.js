@@ -152,6 +152,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('historyMenuBtn').addEventListener('click', () => History.open());
   document.getElementById('termsMenuBtn').addEventListener('click', () => openSheet('termsSheet'));
   document.getElementById('privacyMenuBtn').addEventListener('click', () => openSheet('privacySheet'));
+  document.getElementById('checkUpdatesBtn').addEventListener('click', () => checkForUpdatesNow());
 });
 
 window.Settings = Settings;

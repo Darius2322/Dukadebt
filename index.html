@@ -192,6 +192,12 @@
       </div>
 
       <div class="settings-group">
+        <h3>App Updates</h3>
+        <p class="muted" style="margin-bottom:12px;">Duka Ledger checks for updates automatically. Use this if you just published a new version and want to check right now.</p>
+        <button class="btn btn-outline" id="checkUpdatesBtn">🔄 Check for Updates</button>
+      </div>
+
+      <div class="settings-group">
         <h3>Support Contact</h3>
         <p class="muted" style="margin-bottom:12px;">Shown on the About screen so customers or staff can reach you.</p>
         <div class="field"><label>Support Phone (WhatsApp)</label><input type="tel" id="settingsSupportPhone" placeholder="e.g. 0700 000 000"></div>
@@ -364,12 +370,20 @@
     </div>
     <div class="field">
       <label>Payment Method</label>
-      <div class="seg" id="paymentMethodSeg">
-        <button data-method="Cash" class="active">Cash</button>
-        <button data-method="M-Pesa">M-Pesa</button>
-        <button data-method="Bank">Bank</button>
-        <button data-method="Other">Other</button>
+      <div class="method-grid" id="paymentMethodSeg">
+        <button data-method="Cash" class="active">💵 Cash</button>
+        <button data-method="Till">🏪 Till</button>
+        <button data-method="Pochi">📱 Pochi</button>
+        <button data-method="Send Money">➡️ Send Money</button>
+        <button data-method="Paybill">🧾 Paybill</button>
+        <button data-method="Bank">🏦 Bank</button>
+        <button data-method="Other">✳️ Other</button>
       </div>
+    </div>
+    <div class="field" id="confirmationNameField" style="display:none;">
+      <label>Name on M-Pesa Confirmation</label>
+      <input type="text" id="paymentConfirmationName" placeholder="e.g. name shown after payment went through">
+      <div class="hint">Handy for checking the payment landed with the right person or till.</div>
     </div>
     <div class="btn-row">
       <div class="field" style="flex:1;"><label>Payment Date</label><input type="date" id="paymentDate"></div>
@@ -389,7 +403,12 @@
     <div class="grabber"></div>
     <div class="sheet-header"><h2>Statement</h2><button class="iconbtn" data-close-sheet>✕</button></div>
     <div id="statementContent"></div>
-    <button class="btn btn-primary" id="statementShareBtn" style="margin-top:16px; background:#25D366; border-color:#25D366;">💬 Share via WhatsApp</button>
+    <div class="field" style="margin-top:14px;">
+      <label>Send to WhatsApp Number</label>
+      <input type="tel" id="statementSendToNumber" placeholder="e.g. 0712 345 678">
+      <div class="hint">Filled in with this customer's saved number — change it to send to someone else instead.</div>
+    </div>
+    <button class="btn btn-primary" id="statementShareBtn" style="margin-top:6px; background:#25D366; border-color:#25D366;">💬 Share via WhatsApp</button>
     <div class="btn-row" style="margin-top:10px;">
       <button class="btn btn-outline" id="statementDownloadBtn">⭳ Save as Image</button>
       <button class="btn btn-outline" id="statementPrintBtn">🖨 Print</button>
@@ -478,16 +497,35 @@
     <div class="grabber"></div>
     <div class="sheet-header"><h2>About Duka Ledger</h2><button class="iconbtn" data-close-sheet>✕</button></div>
 
-    <div style="text-align:center; padding:6px 0 18px;">
+    <div style="text-align:center; padding:6px 0 16px;">
       <div class="avatar" style="width:56px; height:56px; margin:0 auto 10px; font-size:20px;">DL</div>
       <div style="font-family:var(--font-display); font-size:19px; font-weight:700;">Duka Ledger</div>
       <div class="muted" style="margin-top:2px;">Offline Debt Book</div>
+      <div class="pill" style="margin-top:10px; display:inline-flex;"><span class="dot"></span><span class="pill-label">Version 1.0</span></div>
+    </div>
+
+    <div class="card" style="margin-bottom:14px;">
+      <div class="muted" style="text-transform:uppercase; letter-spacing:.06em; font-size:11px; font-weight:700; margin-bottom:8px;">What is Duka Ledger?</div>
+      <p style="font-size:13.5px; line-height:1.6; margin:0; color:var(--ink-soft);">Duka Ledger is a free, offline-first credit book for shopkeepers and small business owners who sell on credit. It replaces the paper exercise book — record customers, debts, and payments, print or share professional statements, and never lose a record, even with no internet connection at all.</p>
+    </div>
+
+    <div class="card" style="margin-bottom:14px;">
+      <div class="muted" style="text-transform:uppercase; letter-spacing:.06em; font-size:11px; font-weight:700; margin-bottom:10px;">What it does</div>
+      <div style="font-size:13px; line-height:2; color:var(--ink-soft);">
+        ✓ Tracks every customer, debt, and payment<br>
+        ✓ Works fully offline — nothing needs the internet<br>
+        ✓ Generates shareable, WhatsApp-ready receipts<br>
+        ✓ Keeps a complete history of every record<br>
+        ✓ Backs up and restores your data as a file you control<br>
+        ✓ Locks with a PIN or fingerprint to protect your books
+      </div>
     </div>
 
     <div class="card" style="margin-bottom:14px;">
       <div class="muted" style="text-transform:uppercase; letter-spacing:.06em; font-size:11px; font-weight:700; margin-bottom:6px;">Founder</div>
       <div style="font-weight:700; font-size:15px;">Darius Momanyi</div>
-      <div class="muted" style="margin-top:2px;">Founder &amp; Developer, Duka Ledger</div>
+      <div class="muted" style="margin-top:2px; margin-bottom:10px;">Founder &amp; Developer, Duka Ledger</div>
+      <p style="font-size:13px; line-height:1.6; margin:0; color:var(--ink-soft);">Built to give small business owners a trustworthy, private alternative to the paper credit book — one that works whether or not there's signal, and keeps every shilling accounted for.</p>
     </div>
 
     <div class="card" style="margin-bottom:14px;">
@@ -500,7 +538,7 @@
       <a href="https://dmn-solution.vercel.app" target="_blank" rel="noopener" style="color:var(--brand); font-weight:600; font-size:14.5px;">dmn-solution.vercel.app</a>
     </div>
 
-    <div class="muted" style="text-align:center; margin-top:18px; font-size:12px;">Duka Ledger keeps every record on your device. No data ever leaves your phone.</div>
+    <div class="muted" style="text-align:center; margin-top:18px; font-size:12px; line-height:1.6;">Duka Ledger keeps every record on your device. No data ever leaves your phone.<br>© 2026 Darius Momanyi. All rights reserved.</div>
   </div>
 </div>
 

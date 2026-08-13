@@ -158,6 +158,7 @@ const DB = {
       amount: Number(data.amount) || 0,
       description: (data.description || '').trim(),
       paymentMethod: data.paymentMethod || null,
+      confirmationName: (data.confirmationName || '').trim(),
       notes: (data.notes || '').trim(),
       date: data.date || now,
       createdAt: now

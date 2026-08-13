@@ -92,6 +92,7 @@ const Profile = {
             <div class="tl-amt ${t.type === 'payment' ? 'payment' : 'debt'} num">${Utils.esc(Utils.formatSignedMoney(t.amount, t.type))}</div>
           </div>
           ${t.notes ? `<div class="muted" style="margin-top:5px;">${Utils.esc(t.notes)}</div>` : ''}
+          ${t.confirmationName ? `<div class="muted" style="margin-top:5px;">✓ Confirmed as: ${Utils.esc(t.confirmationName)}</div>` : ''}
           <div class="tl-run num">Running balance: ${Utils.esc(Utils.formatMoney(t.running))}</div>
           <div class="tl-actions">
             <button data-edit-txn="${t.id}">Edit</button>

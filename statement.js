@@ -8,6 +8,8 @@ const Statement = {
   open(customerId) {
     this.currentCustomerId = customerId;
     this.render();
+    const customer = State.customers.find(c => c.id === customerId);
+    document.getElementById('statementSendToNumber').value = (customer && customer.phone) || '';
     openSheet('statementSheet');
   },
 
@@ -299,7 +301,8 @@ const Statement = {
     // Download the image and open WhatsApp with a prefilled text summary
     // so the person can attach the downloaded image manually.
     await this.download();
-    const phone = (customer.phone || '').replace(/[^0-9+]/g, '');
+    const chosenNumber = document.getElementById('statementSendToNumber').value || customer.phone || '';
+    const phone = chosenNumber.replace(/[^0-9+]/g, '');
     const waUrl = phone
       ? `https://wa.me/${phone.replace(/^0/, '254').replace('+', '')}?text=${encodeURIComponent(summary)}`
       : `https://wa.me/?text=${encodeURIComponent(summary)}`;

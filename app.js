@@ -56,7 +56,11 @@ async function init() {
 
 // ---------- App update detection ----------
 function registerServiceWorkerWithUpdateCheck() {
-  navigator.serviceWorker.register('./sw.js').then((reg) => {
+  // updateViaCache:'none' stops the browser reusing its own HTTP cache for
+  // the service worker script itself, so every check hits the network.
+  navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' }).then((reg) => {
+    window._dukaSwReg = reg;
+
     // A worker already waiting (e.g. update happened while app was closed).
     if (reg.waiting && navigator.serviceWorker.controller) {
       showUpdateBanner(reg);
@@ -71,8 +75,16 @@ function registerServiceWorkerWithUpdateCheck() {
         }
       });
     });
-    // Periodically check for a new version while the app is open.
-    setInterval(() => reg.update().catch(() => {}), 60 * 60 * 1000);
+
+    // Check immediately, whenever the tab regains focus/visibility (the
+    // moment someone is most likely to have a fresh deploy waiting), and
+    // periodically while the app stays open in the background.
+    reg.update().catch(() => {});
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') reg.update().catch(() => {});
+    });
+    window.addEventListener('focus', () => reg.update().catch(() => {}));
+    setInterval(() => reg.update().catch(() => {}), 15 * 60 * 1000);
   }).catch(e => console.warn('SW registration failed', e));
 
   let refreshing = false;
@@ -83,15 +95,36 @@ function registerServiceWorkerWithUpdateCheck() {
   });
 }
 
+// Manual "Check for Updates" — used from Settings for troubleshooting/testing.
+async function checkForUpdatesNow() {
+  if (!('serviceWorker' in navigator)) { Toast.show('Updates are not supported in this browser', 'error'); return; }
+  const reg = window._dukaSwReg || await navigator.serviceWorker.getRegistration();
+  if (!reg) { Toast.show('No update service found — try reopening the app', 'error'); return; }
+  await reg.update();
+  await new Promise(r => setTimeout(r, 800));
+  if (reg.waiting && navigator.serviceWorker.controller) {
+    showUpdateBanner(reg);
+  } else {
+    Toast.show('You already have the latest version', 'success');
+  }
+}
+window.checkForUpdatesNow = checkForUpdatesNow;
+
 function showUpdateBanner(reg) {
   const banner = document.getElementById('updateBanner');
   banner.classList.add('show');
   DB.logActivity('app_updated', 'A new version of Duka Ledger was downloaded and is ready to install').then(() => {
     if (window.Notifications) Notifications.refreshBadge();
   });
-  document.getElementById('updateNowBtn').onclick = () => {
+  const btn = document.getElementById('updateNowBtn');
+  btn.disabled = false;
+  btn.textContent = 'Update Now';
+  btn.onclick = () => {
+    btn.disabled = true;
+    btn.textContent = 'Updating…';
     if (reg.waiting) reg.waiting.postMessage({ type: 'SKIP_WAITING' });
-    banner.classList.remove('show');
+    // Fallback in case controllerchange doesn't fire for some reason.
+    setTimeout(() => { if (btn.disabled) window.location.reload(); }, 2500);
   };
 }
 

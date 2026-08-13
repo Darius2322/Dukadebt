@@ -123,11 +123,18 @@ const Transactions = {
     document.getElementById('paymentDate').value = Utils.todayInputValue();
     document.getElementById('paymentTime').value = Utils.nowTimeValue();
     document.getElementById('paymentNotes').value = '';
+    document.getElementById('paymentConfirmationName').value = '';
     document.getElementById('paymentFormError').textContent = '';
     document.getElementById('paymentDeleteBtn').style.display = 'none';
     document.querySelectorAll('#paymentMethodSeg button').forEach(b => b.classList.toggle('active', b.dataset.method === 'Cash'));
+    Transactions.toggleConfirmationField('Cash');
     openSheet('paymentFormSheet');
     setTimeout(() => document.getElementById('paymentAmount').focus(), 200);
+  },
+
+  toggleConfirmationField(method) {
+    const needsConfirmation = ['Till', 'Pochi', 'Send Money', 'Paybill'].includes(method);
+    document.getElementById('confirmationNameField').style.display = needsConfirmation ? 'block' : 'none';
   },
 
   async submitPaymentForm() {
@@ -136,6 +143,7 @@ const Transactions = {
     const time = document.getElementById('paymentTime').value || Utils.nowTimeValue();
     const notes = Utils.clean(document.getElementById('paymentNotes').value, 500);
     const method = document.querySelector('#paymentMethodSeg button.active')?.dataset.method || 'Cash';
+    const confirmationName = Utils.clean(document.getElementById('paymentConfirmationName').value, 100);
     const errEl = document.getElementById('paymentFormError');
 
     if (!Utils.isPositiveNumber(amount)) { errEl.textContent = 'Enter an amount greater than zero.'; return; }
@@ -164,11 +172,11 @@ const Transactions = {
       const isoDate = Utils.combineDateTime(date, time);
       const custName = (State.customers.find(c => c.id === this.activeCustomerId) || {}).name || 'a customer';
       if (this.editingId) {
-        await DB.updateTransaction(this.editingId, { amount: Number(amount), date: isoDate, notes, paymentMethod: method });
+        await DB.updateTransaction(this.editingId, { amount: Number(amount), date: isoDate, notes, paymentMethod: method, confirmationName });
         Toast.show('Transaction updated', 'success');
         await Sound.announce('payment_updated', 'Payment updated', `${custName}'s payment of ${Utils.formatMoney(amount)} was updated`);
       } else {
-        await DB.addTransaction({ customerId: this.activeCustomerId, type: 'payment', amount: Number(amount), date: isoDate, notes, paymentMethod: method, description: 'Payment' });
+        await DB.addTransaction({ customerId: this.activeCustomerId, type: 'payment', amount: Number(amount), date: isoDate, notes, paymentMethod: method, confirmationName, description: 'Payment' });
         Toast.show('Payment recorded', 'success');
         await Sound.announce('payment_added', 'Payment received', `${custName} paid ${Utils.formatMoney(amount)} via ${method}`);
       }
@@ -206,9 +214,11 @@ const Transactions = {
       document.getElementById('paymentDate').value = Utils.toInputDate(t.date);
       document.getElementById('paymentTime').value = Utils.toInputTime(t.date);
       document.getElementById('paymentNotes').value = t.notes || '';
+      document.getElementById('paymentConfirmationName').value = t.confirmationName || '';
       document.getElementById('paymentFormError').textContent = '';
       document.getElementById('paymentDeleteBtn').style.display = 'block';
       document.querySelectorAll('#paymentMethodSeg button').forEach(b => b.classList.toggle('active', b.dataset.method === (t.paymentMethod || 'Cash')));
+      Transactions.toggleConfirmationField(t.paymentMethod || 'Cash');
       openSheet('paymentFormSheet');
     }
   },
@@ -355,6 +365,7 @@ document.addEventListener('DOMContentLoaded', () => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('#paymentMethodSeg button').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
+      Transactions.toggleConfirmationField(btn.dataset.method);
     });
   });
 });
