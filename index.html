@@ -72,6 +72,11 @@
 
       <div class="section-title"><h2>More</h2></div>
       <div class="more-grid">
+        <div class="more-tile" id="guideMenuBtn">
+          <div class="more-ic">📘</div>
+          <div class="more-label">How to Use</div>
+          <div class="more-sub">Quick guide to the app</div>
+        </div>
         <div class="more-tile" id="historyMenuBtn">
           <div class="more-ic">📜</div>
           <div class="more-label">History</div>
@@ -170,10 +175,43 @@
 
       <div class="settings-group">
         <h3>Payment Methods (shown on receipts)</h3>
-        <div class="field"><label>M-Pesa Pochi / Till Number</label><input type="text" id="settingsPochiNumber" placeholder="e.g. 5123456" inputmode="numeric"></div>
-        <div class="field"><label>Paybill Number</label><input type="text" id="settingsPaybillNumber" placeholder="e.g. 400200" inputmode="numeric"></div>
-        <div class="field"><label>Paybill Account Number</label><input type="text" id="settingsPaybillAccount" placeholder="Optional, e.g. your shop name"></div>
-        <div class="hint">If filled in, these appear on every receipt and statement so customers know how to pay you.</div>
+        <p class="muted" style="margin-bottom:12px;">Tick the ways you accept payment. Only the ticked methods, with the details you enter, appear on receipts and statements.</p>
+
+        <div class="method-option">
+          <label class="checkline"><input type="checkbox" id="methodTillEnabled"> Till Number</label>
+          <div class="method-option-fields" id="methodTillFields">
+            <input type="text" id="methodTillNumber" placeholder="e.g. 5123456" inputmode="numeric">
+          </div>
+        </div>
+
+        <div class="method-option">
+          <label class="checkline"><input type="checkbox" id="methodPochiEnabled"> M-Pesa Pochi</label>
+          <div class="method-option-fields" id="methodPochiFields">
+            <input type="text" id="methodPochiNumber" placeholder="e.g. 0712 345 678" inputmode="numeric">
+          </div>
+        </div>
+
+        <div class="method-option">
+          <label class="checkline"><input type="checkbox" id="methodSendEnabled"> Send Money</label>
+          <div class="method-option-fields" id="methodSendFields">
+            <input type="text" id="methodSendNumber" placeholder="Phone number to send money to" inputmode="numeric">
+          </div>
+        </div>
+
+        <div class="method-option">
+          <label class="checkline"><input type="checkbox" id="methodPaybillEnabled"> Paybill</label>
+          <div class="method-option-fields two-col" id="methodPaybillFields">
+            <input type="text" id="methodPaybillNumber" placeholder="Paybill number" inputmode="numeric">
+            <input type="text" id="methodPaybillAccount" placeholder="Account number (optional)">
+          </div>
+        </div>
+
+        <div class="method-option">
+          <label class="checkline"><input type="checkbox" id="methodOtherEnabled"> Other</label>
+          <div class="method-option-fields" id="methodOtherFields">
+            <input type="text" id="methodOtherDetails" placeholder="e.g. Bank: KCB, Acc: 0123456789">
+          </div>
+        </div>
       </div>
 
       <div class="settings-group">
@@ -487,6 +525,27 @@
       <p><strong>5. No tracking.</strong> We do not use analytics, advertising SDKs, or third-party tracking scripts of any kind in this app.</p>
       <p><strong>6. Deleting your data.</strong> Clearing your browser or app storage, or uninstalling the app, permanently deletes all records. Export a backup first if you want to keep them.</p>
       <p><strong>7. Contact.</strong> Questions about this policy can be sent through the Support Contact details in Settings.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ================= SHEET: How to Use ================= -->
+<div class="overlay" id="guideSheet">
+  <div class="sheet">
+    <div class="grabber"></div>
+    <div class="sheet-header"><h2>How to Use Duka Ledger</h2><button class="iconbtn" data-close-sheet>✕</button></div>
+    <div class="legal-text">
+      <p><strong>1. Add your first customer.</strong> Tap the + button on Home, or "Customers → + Add." Enter their name and phone number — phone lets you send receipts straight to WhatsApp later. On supported phones you can also tap "Import from Contacts" to pull the name and number in automatically.</p>
+      <p><strong>2. Record a debt.</strong> Tap + → Record Debt, choose the customer, enter the amount and what it was for (e.g. "Cement and sand"), then save. Their balance updates immediately.</p>
+      <p><strong>3. Record a payment.</strong> Tap + → Record Payment, choose the customer, enter the amount, and tick how they paid — Cash, Till, Pochi, Send Money, or Paybill. If it's an M-Pesa method, you can note the name that showed on the confirmation, so you can double-check the payment landed correctly later.</p>
+      <p><strong>4. Check a customer's balance.</strong> Open Customers, tap their name, and you'll see their full balance, total borrowed, total paid, and every transaction in order with running balances.</p>
+      <p><strong>5. Share a receipt.</strong> From a customer's profile, tap Statement. You can print it, save it as an image, or tap "Share via WhatsApp" to send it straight to their number — editable if you want to send it to someone else instead.</p>
+      <p><strong>6. Set up how customers pay you.</strong> In Settings → Payment Methods, tick Till, Pochi, Send Money, and/or Paybill and fill in your numbers. These automatically appear on every receipt so customers always know how to pay you back.</p>
+      <p><strong>7. Check the Reports tab.</strong> See total debt issued, payments received, outstanding balances, and your top debtors — filterable by today, this week, this month, or a custom range.</p>
+      <p><strong>8. Back up your data.</strong> In Settings → Backup & Restore, tap "Export Backup" regularly. This saves a file with every customer and transaction — keep a copy somewhere safe. If you ever need to restore it, use "Choose Backup File to Restore."</p>
+      <p><strong>9. Lock the app.</strong> In Settings → Security, set a PIN so no one else can open Duka Ledger. If your phone supports it, you can also turn on fingerprint/face unlock as a shortcut.</p>
+      <p><strong>10. Everything works offline.</strong> Duka Ledger needs no internet connection for daily use — customers, debts, payments, receipts, and reports all work in airplane mode. You only need internet to share via WhatsApp or check for app updates.</p>
+      <p><strong>Still stuck?</strong> Reach out through the Support Contact details on the About screen.</p>
     </div>
   </div>
 </div>

@@ -211,7 +211,7 @@ const DB = {
   // ---------- Settings ----------
   async getSettings() {
     const rows = await tx([STORES.settings], 'readonly', (t) => reqToPromise(t.objectStore(STORES.settings).getAll()));
-    if (rows.length) return rows[0];
+    if (rows.length) return migratePaymentMethodFields(rows[0]);
     const defaults = {
       id: 'default',
       businessName: 'My Shop',
@@ -223,9 +223,12 @@ const DB = {
       allowOverpayment: false,
       soundEnabled: true,
       pushEnabled: false,
-      pochiNumber: '',
-      paybillNumber: '',
-      paybillAccount: '',
+      methodTillEnabled: false, methodTillNumber: '',
+      methodPochiEnabled: false, methodPochiNumber: '',
+      methodSendEnabled: false, methodSendNumber: '',
+      methodPaybillEnabled: false, methodPaybillNumber: '', methodPaybillAccount: '',
+      methodOtherEnabled: false, methodOtherDetails: '',
+      migratedPaymentMethodsV2: true,
       supportPhone: '',
       supportEmail: '',
       pinHash: '',
@@ -366,6 +369,31 @@ async function touchCustomer(t, customerId) {
     lastTransactionDate: items.length ? items.map(i => i.date).sort().slice(-1)[0] : null,
     updatedAt: new Date().toISOString()
   });
+}
+
+// One-time migration: the old settings shape had a single combined
+// "Pochi / Till" number field and a separate Paybill field. The new
+// shape lets each payment method be toggled on/off independently, so
+// existing values are carried over into both Till and Pochi (since the
+// old field covered either) and Paybill, without losing any data.
+async function migratePaymentMethodFields(settings) {
+  if (settings.migratedPaymentMethodsV2) return settings;
+
+  const patch = { migratedPaymentMethodsV2: true };
+  if (settings.pochiNumber) {
+    patch.methodTillEnabled = true;
+    patch.methodTillNumber = settings.pochiNumber;
+    patch.methodPochiEnabled = true;
+    patch.methodPochiNumber = settings.pochiNumber;
+  }
+  if (settings.paybillNumber) {
+    patch.methodPaybillEnabled = true;
+    patch.methodPaybillNumber = settings.paybillNumber;
+    patch.methodPaybillAccount = settings.paybillAccount || '';
+  }
+  const updated = { ...settings, ...patch };
+  await tx([STORES.settings], 'readwrite', (t) => t.objectStore(STORES.settings).put(updated));
+  return updated;
 }
 
 window.DB = DB;

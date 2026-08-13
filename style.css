@@ -334,6 +334,21 @@ textarea{ resize:vertical; min-height:70px; }
 }
 .method-grid button.active{ background:var(--brand); color:#fff; border-color:var(--brand); }
 
+.method-option{
+  background:var(--paper-raised); border:1px solid var(--rule); border-radius:var(--radius);
+  padding:12px 14px; margin-bottom:10px;
+}
+.method-option .checkline{ margin:0; font-weight:600; }
+.method-option-fields{
+  max-height:0; overflow:hidden; opacity:0;
+  transition:max-height .18s ease, opacity .18s ease, margin-top .18s ease;
+}
+.method-option-fields.open{ max-height:120px; opacity:1; margin-top:10px; }
+.method-option-fields input{ margin-bottom:8px; }
+.method-option-fields input:last-child{ margin-bottom:0; }
+.method-option-fields.two-col{ display:flex; gap:8px; }
+.method-option-fields.two-col input{ margin-bottom:0; }
+
 .searchbar{
   display:flex; align-items:center; gap:8px;
   background:var(--paper-raised); border:1px solid var(--rule); border-radius:999px;

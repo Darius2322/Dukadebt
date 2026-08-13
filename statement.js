@@ -65,6 +65,15 @@ const Statement = {
           <div class="row final"><span>Outstanding Balance</span><span class="num">${Utils.esc(Utils.formatMoney(customer.balance || 0))}</span></div>
         </div>
 
+        ${(() => {
+          const lines = Utils.getPaymentMethodLines(settings);
+          if (!lines.length) return '';
+          return `<div style="margin-top:14px; padding-top:12px; border-top:1px dashed var(--rule);">
+            <div class="muted" style="text-transform:uppercase; letter-spacing:.06em; font-size:11px; font-weight:700; margin-bottom:6px;">Pay Via</div>
+            ${lines.map(l => `<div style="color:var(--brand); font-weight:600; font-size:13px; margin-bottom:3px;">${Utils.esc(l)}</div>`).join('')}
+          </div>`;
+        })()}
+
         ${settings.receiptFooter ? `<div class="muted" style="text-align:center; margin-top:16px;">${Utils.esc(settings.receiptFooter)}</div>` : ''}
       </div>
     `;
@@ -95,9 +104,7 @@ const Statement = {
     const rowH = 46;
     const headerH = 165;
     const totalsH = 116;
-    const paymentInfoLines = [];
-    if (settings.pochiNumber) paymentInfoLines.push(`M-Pesa Pochi / Till: ${settings.pochiNumber}`);
-    if (settings.paybillNumber) paymentInfoLines.push(`Paybill: ${settings.paybillNumber}${settings.paybillAccount ? '  Acc: ' + settings.paybillAccount : ''}`);
+    const paymentInfoLines = Utils.getPaymentMethodLines(settings);
     const paymentInfoH = paymentInfoLines.length ? (34 + paymentInfoLines.length * 22) : 0;
     const footerH = settings.receiptFooter ? 50 : 20;
     const tableHeaderH = 36;
@@ -297,9 +304,21 @@ const Statement = {
       }
     }
 
-    // Fallback: no native file sharing available (e.g. desktop browser).
-    // Download the image and open WhatsApp with a prefilled text summary
-    // so the person can attach the downloaded image manually.
+    // Fallback path: the browser can't hand a file directly to a specific
+    // WhatsApp chat via a URL — that's a WhatsApp/browser restriction, not
+    // something this app can bypass. The closest we can get automatically:
+    // download the receipt image, open WhatsApp with the right chat and a
+    // pre-filled message already loaded, and clearly tell the person to
+    // attach the image we just saved (one tap on the paperclip).
+    const ok = await confirmDialog({
+      title: 'Almost there',
+      message: 'The receipt image will download, then WhatsApp will open with the chat and message ready. Tap the 📎 attach icon in WhatsApp and choose the image to finish sending.',
+      confirmLabel: 'Continue',
+      danger: false,
+      glyph: '💬'
+    });
+    if (!ok) return;
+
     await this.download();
     const chosenNumber = document.getElementById('statementSendToNumber').value || customer.phone || '';
     const phone = chosenNumber.replace(/[^0-9+]/g, '');
@@ -307,7 +326,7 @@ const Statement = {
       ? `https://wa.me/${phone.replace(/^0/, '254').replace('+', '')}?text=${encodeURIComponent(summary)}`
       : `https://wa.me/?text=${encodeURIComponent(summary)}`;
     window.open(waUrl, '_blank');
-    Toast.show('Receipt downloaded — attach it to the WhatsApp chat that just opened', 'success');
+    Toast.show('Receipt downloaded — attach it using the 📎 icon in WhatsApp', 'success');
   }
 };
 

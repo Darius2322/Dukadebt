@@ -11,15 +11,40 @@ const Settings = {
     document.getElementById('settingsCurrency').value = s.currency || 'KSh';
     document.getElementById('settingsReceiptFooter').value = s.receiptFooter || '';
     document.getElementById('settingsAllowOverpayment').checked = !!s.allowOverpayment;
-    document.getElementById('settingsPochiNumber').value = s.pochiNumber || '';
-    document.getElementById('settingsPaybillNumber').value = s.paybillNumber || '';
-    document.getElementById('settingsPaybillAccount').value = s.paybillAccount || '';
+
+    document.getElementById('methodTillEnabled').checked = !!s.methodTillEnabled;
+    document.getElementById('methodTillNumber').value = s.methodTillNumber || '';
+    document.getElementById('methodPochiEnabled').checked = !!s.methodPochiEnabled;
+    document.getElementById('methodPochiNumber').value = s.methodPochiNumber || '';
+    document.getElementById('methodSendEnabled').checked = !!s.methodSendEnabled;
+    document.getElementById('methodSendNumber').value = s.methodSendNumber || '';
+    document.getElementById('methodPaybillEnabled').checked = !!s.methodPaybillEnabled;
+    document.getElementById('methodPaybillNumber').value = s.methodPaybillNumber || '';
+    document.getElementById('methodPaybillAccount').value = s.methodPaybillAccount || '';
+    document.getElementById('methodOtherEnabled').checked = !!s.methodOtherEnabled;
+    document.getElementById('methodOtherDetails').value = s.methodOtherDetails || '';
+    this.syncMethodFieldVisibility();
+
     document.getElementById('settingsSupportPhone').value = s.supportPhone || '';
     document.getElementById('settingsSupportEmail').value = s.supportEmail || '';
     document.getElementById('settingsSoundEnabled').checked = s.soundEnabled !== false;
     document.getElementById('settingsPushEnabled').checked = !!s.pushEnabled;
     document.querySelectorAll('#themeSeg button').forEach(b => b.classList.toggle('active', b.dataset.theme === (s.theme || 'system')));
     this.renderSecurity();
+  },
+
+  syncMethodFieldVisibility() {
+    const map = {
+      methodTillEnabled: 'methodTillFields',
+      methodPochiEnabled: 'methodPochiFields',
+      methodSendEnabled: 'methodSendFields',
+      methodPaybillEnabled: 'methodPaybillFields',
+      methodOtherEnabled: 'methodOtherFields'
+    };
+    Object.entries(map).forEach(([checkboxId, fieldsId]) => {
+      const checked = document.getElementById(checkboxId).checked;
+      document.getElementById(fieldsId).classList.toggle('open', checked);
+    });
   },
 
   async save() {
@@ -29,14 +54,32 @@ const Settings = {
     const currency = Utils.clean(document.getElementById('settingsCurrency').value, 8) || 'KSh';
     const receiptFooter = Utils.clean(document.getElementById('settingsReceiptFooter').value, 200);
     const allowOverpayment = document.getElementById('settingsAllowOverpayment').checked;
-    const pochiNumber = Utils.clean(document.getElementById('settingsPochiNumber').value, 20);
-    const paybillNumber = Utils.clean(document.getElementById('settingsPaybillNumber').value, 20);
-    const paybillAccount = Utils.clean(document.getElementById('settingsPaybillAccount').value, 40);
+
+    const methodTillEnabled = document.getElementById('methodTillEnabled').checked;
+    const methodTillNumber = Utils.clean(document.getElementById('methodTillNumber').value, 20);
+    const methodPochiEnabled = document.getElementById('methodPochiEnabled').checked;
+    const methodPochiNumber = Utils.clean(document.getElementById('methodPochiNumber').value, 20);
+    const methodSendEnabled = document.getElementById('methodSendEnabled').checked;
+    const methodSendNumber = Utils.clean(document.getElementById('methodSendNumber').value, 20);
+    const methodPaybillEnabled = document.getElementById('methodPaybillEnabled').checked;
+    const methodPaybillNumber = Utils.clean(document.getElementById('methodPaybillNumber').value, 20);
+    const methodPaybillAccount = Utils.clean(document.getElementById('methodPaybillAccount').value, 40);
+    const methodOtherEnabled = document.getElementById('methodOtherEnabled').checked;
+    const methodOtherDetails = Utils.clean(document.getElementById('methodOtherDetails').value, 100);
+
     const supportPhone = Utils.clean(document.getElementById('settingsSupportPhone').value, 40);
     const supportEmail = Utils.clean(document.getElementById('settingsSupportEmail').value, 100);
     const soundEnabled = document.getElementById('settingsSoundEnabled').checked;
 
-    State.settings = await DB.saveSettings({ businessName, businessPhone, businessLocation, currency, receiptFooter, allowOverpayment, pochiNumber, paybillNumber, paybillAccount, supportPhone, supportEmail, soundEnabled });
+    State.settings = await DB.saveSettings({
+      businessName, businessPhone, businessLocation, currency, receiptFooter, allowOverpayment,
+      methodTillEnabled, methodTillNumber,
+      methodPochiEnabled, methodPochiNumber,
+      methodSendEnabled, methodSendNumber,
+      methodPaybillEnabled, methodPaybillNumber, methodPaybillAccount,
+      methodOtherEnabled, methodOtherDetails,
+      supportPhone, supportEmail, soundEnabled
+    });
     Utils.currencySymbol = currency;
     Toast.show('Settings saved', 'success');
     await DB.logActivity('settings_saved', 'Business settings were updated', { notify: false });
@@ -123,6 +166,9 @@ const Settings = {
 };
 
 document.addEventListener('DOMContentLoaded', () => {
+  ['methodTillEnabled', 'methodPochiEnabled', 'methodSendEnabled', 'methodPaybillEnabled', 'methodOtherEnabled'].forEach(id => {
+    document.getElementById(id).addEventListener('change', () => Settings.syncMethodFieldVisibility());
+  });
   document.getElementById('settingsSaveBtn').addEventListener('click', () => Settings.save());
   document.querySelectorAll('#themeSeg button').forEach(btn => {
     btn.addEventListener('click', () => Settings.setTheme(btn.dataset.theme));
@@ -150,6 +196,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   document.getElementById('historyMenuBtn').addEventListener('click', () => History.open());
+  document.getElementById('guideMenuBtn').addEventListener('click', () => openSheet('guideSheet'));
   document.getElementById('termsMenuBtn').addEventListener('click', () => openSheet('termsSheet'));
   document.getElementById('privacyMenuBtn').addEventListener('click', () => openSheet('privacySheet'));
   document.getElementById('checkUpdatesBtn').addEventListener('click', () => checkForUpdatesNow());

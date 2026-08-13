@@ -65,6 +65,20 @@ const Utils = {
     return new Date(`${date}T${time}:00`).toISOString();
   },
 
+  // Builds the "Pay via" lines for receipts/statements from the
+  // checkbox-gated payment method settings, in a stable display order.
+  getPaymentMethodLines(settings) {
+    const lines = [];
+    if (settings.methodTillEnabled && settings.methodTillNumber) lines.push(`Till: ${settings.methodTillNumber}`);
+    if (settings.methodPochiEnabled && settings.methodPochiNumber) lines.push(`M-Pesa Pochi: ${settings.methodPochiNumber}`);
+    if (settings.methodSendEnabled && settings.methodSendNumber) lines.push(`Send Money: ${settings.methodSendNumber}`);
+    if (settings.methodPaybillEnabled && settings.methodPaybillNumber) {
+      lines.push(`Paybill: ${settings.methodPaybillNumber}${settings.methodPaybillAccount ? '  Acc: ' + settings.methodPaybillAccount : ''}`);
+    }
+    if (settings.methodOtherEnabled && settings.methodOtherDetails) lines.push(settings.methodOtherDetails);
+    return lines;
+  },
+
   toInputDate(iso) {
     if (!iso) return Utils.todayInputValue();
     return new Date(iso).toISOString().slice(0, 10);
