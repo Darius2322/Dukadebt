@@ -79,6 +79,23 @@ const Statement = {
     `;
   },
 
+  wrapCanvasText(ctx, text, maxWidth) {
+    const words = text.split(' ');
+    const lines = [];
+    let current = '';
+    for (const word of words) {
+      const test = current ? current + ' ' + word : word;
+      if (ctx.measureText(test).width > maxWidth && current) {
+        lines.push(current);
+        current = word;
+      } else {
+        current = test;
+      }
+    }
+    if (current) lines.push(current);
+    return lines;
+  },
+
   print() {
     window.print();
   },
@@ -105,7 +122,10 @@ const Statement = {
     const headerH = 165;
     const totalsH = 116;
     const paymentInfoLines = Utils.getPaymentMethodLines(settings);
-    const paymentInfoH = paymentInfoLines.length ? (34 + paymentInfoLines.length * 22) : 0;
+    const measureCtx = document.createElement('canvas').getContext('2d');
+    measureCtx.font = '13px -apple-system, Roboto, sans-serif';
+    const wrappedPaymentLines = paymentInfoLines.flatMap(line => this.wrapCanvasText(measureCtx, line, W - padX * 2));
+    const paymentInfoH = wrappedPaymentLines.length ? (34 + wrappedPaymentLines.length * 22) : 0;
     const footerH = settings.receiptFooter ? 50 : 20;
     const tableHeaderH = 36;
     const H = headerH + tableHeaderH + Math.max(rows.length, 1) * rowH + totalsH + paymentInfoH + footerH + 30;
@@ -234,7 +254,7 @@ const Statement = {
     ctx.beginPath(); ctx.moveTo(padX, y - 8); ctx.lineTo(W - padX, y - 8); ctx.stroke();
     totalsRow('Outstanding Balance', Utils.formatMoney(customer.balance || 0), OWED, true);
 
-    if (paymentInfoLines.length) {
+    if (wrappedPaymentLines.length) {
       y += 8;
       ctx.textAlign = 'left';
       ctx.font = '700 12px -apple-system, Roboto, sans-serif';
@@ -243,7 +263,7 @@ const Statement = {
       y += 20;
       ctx.font = '13px -apple-system, Roboto, sans-serif';
       ctx.fillStyle = BRAND;
-      for (const line of paymentInfoLines) { ctx.fillText(line, padX, y); y += 22; }
+      for (const line of wrappedPaymentLines) { ctx.fillText(line, padX, y); y += 22; }
     }
 
     if (settings.receiptFooter) {

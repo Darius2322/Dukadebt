@@ -14,13 +14,17 @@ const Settings = {
 
     document.getElementById('methodTillEnabled').checked = !!s.methodTillEnabled;
     document.getElementById('methodTillNumber').value = s.methodTillNumber || '';
+    document.getElementById('methodTillName').value = s.methodTillName || '';
     document.getElementById('methodPochiEnabled').checked = !!s.methodPochiEnabled;
     document.getElementById('methodPochiNumber').value = s.methodPochiNumber || '';
+    document.getElementById('methodPochiName').value = s.methodPochiName || '';
     document.getElementById('methodSendEnabled').checked = !!s.methodSendEnabled;
     document.getElementById('methodSendNumber').value = s.methodSendNumber || '';
+    document.getElementById('methodSendName').value = s.methodSendName || '';
     document.getElementById('methodPaybillEnabled').checked = !!s.methodPaybillEnabled;
     document.getElementById('methodPaybillNumber').value = s.methodPaybillNumber || '';
     document.getElementById('methodPaybillAccount').value = s.methodPaybillAccount || '';
+    document.getElementById('methodPaybillName').value = s.methodPaybillName || '';
     document.getElementById('methodOtherEnabled').checked = !!s.methodOtherEnabled;
     document.getElementById('methodOtherDetails').value = s.methodOtherDetails || '';
     this.syncMethodFieldVisibility();
@@ -45,6 +49,7 @@ const Settings = {
       const checked = document.getElementById(checkboxId).checked;
       document.getElementById(fieldsId).classList.toggle('open', checked);
     });
+    document.getElementById('methodPaybillNameFields').classList.toggle('open', document.getElementById('methodPaybillEnabled').checked);
   },
 
   async save() {
@@ -57,13 +62,17 @@ const Settings = {
 
     const methodTillEnabled = document.getElementById('methodTillEnabled').checked;
     const methodTillNumber = Utils.clean(document.getElementById('methodTillNumber').value, 20);
+    const methodTillName = Utils.clean(document.getElementById('methodTillName').value, 60);
     const methodPochiEnabled = document.getElementById('methodPochiEnabled').checked;
     const methodPochiNumber = Utils.clean(document.getElementById('methodPochiNumber').value, 20);
+    const methodPochiName = Utils.clean(document.getElementById('methodPochiName').value, 60);
     const methodSendEnabled = document.getElementById('methodSendEnabled').checked;
     const methodSendNumber = Utils.clean(document.getElementById('methodSendNumber').value, 20);
+    const methodSendName = Utils.clean(document.getElementById('methodSendName').value, 60);
     const methodPaybillEnabled = document.getElementById('methodPaybillEnabled').checked;
     const methodPaybillNumber = Utils.clean(document.getElementById('methodPaybillNumber').value, 20);
     const methodPaybillAccount = Utils.clean(document.getElementById('methodPaybillAccount').value, 40);
+    const methodPaybillName = Utils.clean(document.getElementById('methodPaybillName').value, 60);
     const methodOtherEnabled = document.getElementById('methodOtherEnabled').checked;
     const methodOtherDetails = Utils.clean(document.getElementById('methodOtherDetails').value, 100);
 
@@ -73,10 +82,10 @@ const Settings = {
 
     State.settings = await DB.saveSettings({
       businessName, businessPhone, businessLocation, currency, receiptFooter, allowOverpayment,
-      methodTillEnabled, methodTillNumber,
-      methodPochiEnabled, methodPochiNumber,
-      methodSendEnabled, methodSendNumber,
-      methodPaybillEnabled, methodPaybillNumber, methodPaybillAccount,
+      methodTillEnabled, methodTillNumber, methodTillName,
+      methodPochiEnabled, methodPochiNumber, methodPochiName,
+      methodSendEnabled, methodSendNumber, methodSendName,
+      methodPaybillEnabled, methodPaybillNumber, methodPaybillAccount, methodPaybillName,
       methodOtherEnabled, methodOtherDetails,
       supportPhone, supportEmail, soundEnabled
     });
@@ -200,6 +209,23 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('termsMenuBtn').addEventListener('click', () => openSheet('termsSheet'));
   document.getElementById('privacyMenuBtn').addEventListener('click', () => openSheet('privacySheet'));
   document.getElementById('checkUpdatesBtn').addEventListener('click', () => checkForUpdatesNow());
+
+  document.getElementById('buySodaBtn').addEventListener('click', () => openSheet('sodaSheet'));
+  document.getElementById('sodaCloseBtn').addEventListener('click', () => closeSheet('sodaSheet'));
+  document.getElementById('copySodaNumberBtn').addEventListener('click', async () => {
+    const number = '0110554040';
+    try {
+      await navigator.clipboard.writeText(number);
+      Toast.show('Number copied', 'success');
+    } catch (e) {
+      Toast.show('Could not copy — the number is 0110 554 040', 'error');
+    }
+  });
+  document.getElementById('sodaWhatsappBtn').addEventListener('click', () => {
+    const text = encodeURIComponent("Hey Darius, buying you a soda for Duka Ledger! 🥤");
+    window.open(`https://wa.me/254110554040?text=${text}`, '_blank');
+    closeSheet('sodaSheet');
+  });
 });
 
 window.Settings = Settings;

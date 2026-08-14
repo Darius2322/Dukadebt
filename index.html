@@ -72,6 +72,11 @@
 
       <div class="section-title"><h2>More</h2></div>
       <div class="more-grid">
+        <div class="more-tile" id="referMenuBtn">
+          <div class="more-ic">👥</div>
+          <div class="more-label">Refer a Friend</div>
+          <div class="more-sub">Tell someone about Duka Ledger</div>
+        </div>
         <div class="more-tile" id="guideMenuBtn">
           <div class="more-ic">📘</div>
           <div class="more-label">How to Use</div>
@@ -175,19 +180,21 @@
 
       <div class="settings-group">
         <h3>Payment Methods (shown on receipts)</h3>
-        <p class="muted" style="margin-bottom:12px;">Tick the ways you accept payment. Only the ticked methods, with the details you enter, appear on receipts and statements.</p>
+        <p class="muted" style="margin-bottom:12px;">Tick the ways you accept payment. Add the registered name that shows on the customer's M-Pesa confirmation, so they can check they're paying the right number before sending.</p>
 
         <div class="method-option">
           <label class="checkline"><input type="checkbox" id="methodTillEnabled"> Till Number</label>
           <div class="method-option-fields" id="methodTillFields">
-            <input type="text" id="methodTillNumber" placeholder="e.g. 5123456" inputmode="numeric">
+            <input type="text" id="methodTillNumber" placeholder="Till number, e.g. 5123456" inputmode="numeric">
+            <input type="text" id="methodTillName" placeholder="Registered name shown after payment, e.g. DARIUS SHOP">
           </div>
         </div>
 
         <div class="method-option">
           <label class="checkline"><input type="checkbox" id="methodPochiEnabled"> M-Pesa Pochi</label>
           <div class="method-option-fields" id="methodPochiFields">
-            <input type="text" id="methodPochiNumber" placeholder="e.g. 0712 345 678" inputmode="numeric">
+            <input type="text" id="methodPochiNumber" placeholder="Phone number, e.g. 0712 345 678" inputmode="numeric">
+            <input type="text" id="methodPochiName" placeholder="Registered name shown after payment">
           </div>
         </div>
 
@@ -195,6 +202,7 @@
           <label class="checkline"><input type="checkbox" id="methodSendEnabled"> Send Money</label>
           <div class="method-option-fields" id="methodSendFields">
             <input type="text" id="methodSendNumber" placeholder="Phone number to send money to" inputmode="numeric">
+            <input type="text" id="methodSendName" placeholder="Registered name shown after payment">
           </div>
         </div>
 
@@ -204,6 +212,9 @@
             <input type="text" id="methodPaybillNumber" placeholder="Paybill number" inputmode="numeric">
             <input type="text" id="methodPaybillAccount" placeholder="Account number (optional)">
           </div>
+          <div class="method-option-fields" id="methodPaybillNameFields">
+            <input type="text" id="methodPaybillName" placeholder="Registered business name (optional)">
+          </div>
         </div>
 
         <div class="method-option">
@@ -211,6 +222,17 @@
           <div class="method-option-fields" id="methodOtherFields">
             <input type="text" id="methodOtherDetails" placeholder="e.g. Bank: KCB, Acc: 0123456789">
           </div>
+        </div>
+      </div>
+
+      <div class="settings-group">
+        <div class="soda-card">
+          <div class="soda-emoji">🥤</div>
+          <div class="soda-text">
+            <div class="soda-title">Enjoying Duka Ledger?</div>
+            <div class="soda-sub">Buy the developer a soda</div>
+          </div>
+          <button class="btn btn-primary soda-btn" id="buySodaBtn">Buy a Soda</button>
         </div>
       </div>
 
@@ -529,6 +551,16 @@
   </div>
 </div>
 
+<!-- ================= SHEET: What's New ================= -->
+<div class="overlay" id="changelogSheet">
+  <div class="sheet">
+    <div class="grabber"></div>
+    <div class="sheet-header"><h2 id="changelogTitle">What's New</h2><button class="iconbtn" data-close-sheet>✕</button></div>
+    <div id="changelogList"></div>
+    <button class="btn btn-primary" style="margin-top:16px;" id="changelogOkBtn">Got It</button>
+  </div>
+</div>
+
 <!-- ================= SHEET: How to Use ================= -->
 <div class="overlay" id="guideSheet">
   <div class="sheet">
@@ -601,6 +633,41 @@
   </div>
 </div>
 
+<!-- ================= SHEET: Refer a Friend ================= -->
+<div class="overlay" id="referSheet">
+  <div class="sheet">
+    <div class="grabber"></div>
+    <div class="sheet-header"><h2>Refer a Friend</h2><button class="iconbtn" data-close-sheet>✕</button></div>
+    <p class="muted" style="margin-bottom:16px;">Know another shopkeeper who could use Duka Ledger? Enter their details and we'll open WhatsApp with a message ready to send to Darius.</p>
+    <button class="btn btn-outline" id="referImportContactBtn" style="display:none; margin-bottom:16px;">📇 Import from Contacts</button>
+    <div class="field"><label>Friend's Name *</label><input type="text" id="referFriendName" placeholder="e.g. John Otieno"></div>
+    <div class="field"><label>Friend's Phone Number *</label><input type="tel" id="referFriendPhone" placeholder="e.g. 0712 345 678"></div>
+    <div class="muted" id="referFormError" style="color:var(--danger); margin-bottom:10px;"></div>
+    <button class="btn btn-primary" id="referSendBtn" style="background:#25D366; border-color:#25D366;">💬 Send Referral via WhatsApp</button>
+  </div>
+</div>
+
+<!-- ================= DIALOG: Buy the developer a soda ================= -->
+<div class="overlay modal-center" id="sodaSheet">
+  <div class="dialog">
+    <div class="glyph">🥤</div>
+    <h3>Buy the Developer a Soda</h3>
+    <p>If Duka Ledger has saved you time and kept your books straight, you can send the developer a soda — every bit is appreciated.</p>
+    <div class="soda-detail-row">
+      <div>
+        <div class="lbl">Send Money</div>
+        <div class="num">0110 554 040</div>
+        <div class="muted" style="margin-top:2px;">Darius</div>
+      </div>
+      <button class="btn btn-outline btn-sm" id="copySodaNumberBtn">📋 Copy</button>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-outline dlg-cancel" id="sodaCloseBtn">Maybe Later</button>
+      <button class="btn btn-primary" id="sodaWhatsappBtn" style="background:#25D366; border-color:#25D366;">💬 Open WhatsApp</button>
+    </div>
+  </div>
+</div>
+
 <!-- ================= DIALOG: Generic confirm ================= -->
 <div class="overlay modal-center" id="confirmDialog">
   <div class="dialog">
@@ -629,5 +696,6 @@
 <script src="./notifications.js"></script>
 <script src="./history.js"></script>
 <script src="./backup.js"></script>
+<script src="./referral.js"></script>
 </body>
 </html>

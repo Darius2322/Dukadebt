@@ -656,10 +656,26 @@ table.stmt-table td.num, table.stmt-table th.num{ text-align:right; font-family:
 .list-row .chev{ color:var(--ink-faint); font-size:16px; flex:none; }
 .list-row.unread{ background:var(--gold-tint); border-radius:var(--radius-sm); }
 
-.settings-list-card{
-  background:var(--paper-raised); border:1px solid var(--rule); border-radius:var(--radius);
-  padding:2px 12px;
+.soda-card{
+  display:flex; align-items:center; gap:12px;
+  background:linear-gradient(135deg, var(--gold-tint), var(--paper-raised));
+  border:1px solid var(--gold); border-radius:var(--radius-lg);
+  padding:14px 16px;
 }
+.soda-emoji{ font-size:28px; flex:none; }
+.soda-text{ flex:1; min-width:0; }
+.soda-title{ font-weight:700; font-size:14px; }
+.soda-sub{ font-size:12px; color:var(--ink-faint); margin-top:1px; }
+.soda-btn{ width:auto; flex:none; padding:10px 16px; font-size:13px; background:var(--gold); border-color:var(--gold); }
+.soda-btn:active{ transform:scale(0.97); }
+
+.soda-detail-row{
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  background:var(--paper-raised); border:1px solid var(--rule); border-radius:var(--radius);
+  padding:14px 16px; margin:14px 0;
+}
+.soda-detail-row .num{ font-weight:700; font-size:16px; }
+.soda-detail-row .lbl{ font-size:11px; color:var(--ink-faint); text-transform:uppercase; letter-spacing:.05em; margin-bottom:3px; }
 .divider{ height:1px; background:var(--rule); margin:18px 0; border:none; }
 .muted{ color:var(--ink-faint); font-size:12.5px; }
 .checkline{ display:flex; align-items:center; gap:9px; font-size:13.5px; }

@@ -69,11 +69,17 @@ const Utils = {
   // checkbox-gated payment method settings, in a stable display order.
   getPaymentMethodLines(settings) {
     const lines = [];
-    if (settings.methodTillEnabled && settings.methodTillNumber) lines.push(`Till: ${settings.methodTillNumber}`);
-    if (settings.methodPochiEnabled && settings.methodPochiNumber) lines.push(`M-Pesa Pochi: ${settings.methodPochiNumber}`);
-    if (settings.methodSendEnabled && settings.methodSendNumber) lines.push(`Send Money: ${settings.methodSendNumber}`);
+    if (settings.methodTillEnabled && settings.methodTillNumber) {
+      lines.push(`Till: ${settings.methodTillNumber}${settings.methodTillName ? ' — ' + settings.methodTillName : ''}`);
+    }
+    if (settings.methodPochiEnabled && settings.methodPochiNumber) {
+      lines.push(`M-Pesa Pochi: ${settings.methodPochiNumber}${settings.methodPochiName ? ' — ' + settings.methodPochiName : ''}`);
+    }
+    if (settings.methodSendEnabled && settings.methodSendNumber) {
+      lines.push(`Send Money: ${settings.methodSendNumber}${settings.methodSendName ? ' — ' + settings.methodSendName : ''}`);
+    }
     if (settings.methodPaybillEnabled && settings.methodPaybillNumber) {
-      lines.push(`Paybill: ${settings.methodPaybillNumber}${settings.methodPaybillAccount ? '  Acc: ' + settings.methodPaybillAccount : ''}`);
+      lines.push(`Paybill: ${settings.methodPaybillNumber}${settings.methodPaybillAccount ? '  Acc: ' + settings.methodPaybillAccount : ''}${settings.methodPaybillName ? ' — ' + settings.methodPaybillName : ''}`);
     }
     if (settings.methodOtherEnabled && settings.methodOtherDetails) lines.push(settings.methodOtherDetails);
     return lines;

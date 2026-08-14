@@ -223,13 +223,14 @@ const DB = {
       allowOverpayment: false,
       soundEnabled: true,
       pushEnabled: false,
-      methodTillEnabled: false, methodTillNumber: '',
-      methodPochiEnabled: false, methodPochiNumber: '',
-      methodSendEnabled: false, methodSendNumber: '',
-      methodPaybillEnabled: false, methodPaybillNumber: '', methodPaybillAccount: '',
+      methodTillEnabled: false, methodTillNumber: '', methodTillName: '',
+      methodPochiEnabled: false, methodPochiNumber: '', methodPochiName: '',
+      methodSendEnabled: false, methodSendNumber: '', methodSendName: '',
+      methodPaybillEnabled: false, methodPaybillNumber: '', methodPaybillAccount: '', methodPaybillName: '',
       methodOtherEnabled: false, methodOtherDetails: '',
       migratedPaymentMethodsV2: true,
-      supportPhone: '',
+      migratedSupportV1: true,
+      supportPhone: '0110554040',
       supportEmail: '',
       pinHash: '',
       pinSalt: '',
@@ -376,20 +377,30 @@ async function touchCustomer(t, customerId) {
 // shape lets each payment method be toggled on/off independently, so
 // existing values are carried over into both Till and Pochi (since the
 // old field covered either) and Paybill, without losing any data.
+// This also backfills the default Duka Ledger support number for
+// installs that predate it, without overwriting anyone who already
+// entered their own support contact.
 async function migratePaymentMethodFields(settings) {
-  if (settings.migratedPaymentMethodsV2) return settings;
+  if (settings.migratedPaymentMethodsV2 && settings.migratedSupportV1) return settings;
 
-  const patch = { migratedPaymentMethodsV2: true };
-  if (settings.pochiNumber) {
-    patch.methodTillEnabled = true;
-    patch.methodTillNumber = settings.pochiNumber;
-    patch.methodPochiEnabled = true;
-    patch.methodPochiNumber = settings.pochiNumber;
+  const patch = {};
+  if (!settings.migratedPaymentMethodsV2) {
+    patch.migratedPaymentMethodsV2 = true;
+    if (settings.pochiNumber) {
+      patch.methodTillEnabled = true;
+      patch.methodTillNumber = settings.pochiNumber;
+      patch.methodPochiEnabled = true;
+      patch.methodPochiNumber = settings.pochiNumber;
+    }
+    if (settings.paybillNumber) {
+      patch.methodPaybillEnabled = true;
+      patch.methodPaybillNumber = settings.paybillNumber;
+      patch.methodPaybillAccount = settings.paybillAccount || '';
+    }
   }
-  if (settings.paybillNumber) {
-    patch.methodPaybillEnabled = true;
-    patch.methodPaybillNumber = settings.paybillNumber;
-    patch.methodPaybillAccount = settings.paybillAccount || '';
+  if (!settings.migratedSupportV1) {
+    patch.migratedSupportV1 = true;
+    if (!settings.supportPhone) patch.supportPhone = '0110554040';
   }
   const updated = { ...settings, ...patch };
   await tx([STORES.settings], 'readwrite', (t) => t.objectStore(STORES.settings).put(updated));

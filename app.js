@@ -2,6 +2,27 @@
    app.js — router, dashboard, action sheets, shared UI glue
    ========================================================= */
 
+const APP_VERSION = 'v8';
+
+// What changed in each release, shown automatically the first time
+// someone opens the app after updating to that version.
+const CHANGELOG = {
+  v8: [
+    'Added "Refer a Friend" — enter a friend\'s name and number and send a ready-made referral straight to Darius on WhatsApp.'
+  ],
+  v7: [
+    'Payment methods (Till, Pochi, Send Money, Paybill) can now include the registered name your customers will see on their M-Pesa confirmation — so they can double-check they\'re paying the right number before sending.',
+    'Added a "Buy the Developer a Soda" button in Settings.',
+    'Fixed automatic update detection so new versions are found and installed reliably.',
+    'Added a "What\'s New" screen — this one! — so you always know what changed after an update.'
+  ],
+  v6: [
+    'Payment method selection is now checkbox-based (Cash, Till, Pochi, Send Money, Paybill, Bank, Other).',
+    'Added a full "How to Use" guide, accessible from the Home page.',
+    'Improved the WhatsApp receipt-sharing flow with clearer instructions.'
+  ]
+};
+
 const State = {
   customers: [],
   transactions: [],
@@ -42,6 +63,7 @@ async function init() {
     Transactions.render();
     Reports.render();
     Settings.render();
+    await checkAndShowChangelog();
   } catch (err) {
     console.error(err);
     document.getElementById('app').style.display = '';
@@ -335,6 +357,8 @@ function wireOverlayDismiss() {
   document.querySelectorAll('[data-close-sheet]').forEach(btn => {
     btn.addEventListener('click', () => closeSheet(btn.closest('.overlay').id));
   });
+  const changelogOkBtn = document.getElementById('changelogOkBtn');
+  if (changelogOkBtn) changelogOkBtn.addEventListener('click', () => closeSheet('changelogSheet'));
 }
 
 // Reusable confirm dialog. Returns a Promise<boolean>.
@@ -396,6 +420,34 @@ function wireInstallPrompt() {
     Toast.show('App installed', 'success');
   });
 }
+
+// ---------- What's New ----------
+// Detects a genuine version change (not a brand-new install with no
+// data) and shows exactly what changed, once, right after updating.
+async function checkAndShowChangelog() {
+  const lastSeen = State.settings.lastSeenAppVersion;
+  if (lastSeen === APP_VERSION) return;
+
+  const isFreshInstall = !lastSeen && State.customers.length === 0 && State.transactions.length === 0;
+  State.settings = await DB.saveSettings({ lastSeenAppVersion: APP_VERSION });
+
+  if (isFreshInstall) return;
+  showChangelog(APP_VERSION);
+}
+
+function showChangelog(version) {
+  const changes = CHANGELOG[version];
+  if (!changes || !changes.length) return;
+  document.getElementById('changelogTitle').textContent = `What's New in ${version}`;
+  document.getElementById('changelogList').innerHTML = `
+    <div class="card">
+      <div style="font-size:13.5px; line-height:1.9; color:var(--ink-soft);">
+        ${changes.map(c => `✓ ${Utils.esc(c)}`).join('<br><br>')}
+      </div>
+    </div>`;
+  openSheet('changelogSheet');
+}
+window.showChangelog = showChangelog;
 
 function updateCurrencyLabels() {
   document.querySelectorAll('.currency-input .prefix').forEach(el => { el.textContent = Utils.currencySymbol; });
