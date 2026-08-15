@@ -230,6 +230,8 @@ const DB = {
       methodOtherEnabled: false, methodOtherDetails: '',
       migratedPaymentMethodsV2: true,
       migratedSupportV1: true,
+      migratedOnboardingV1: true,
+      onboardingComplete: false,
       supportPhone: '0110554040',
       supportEmail: '',
       pinHash: '',
@@ -387,9 +389,12 @@ async function touchCustomer(t, customerId) {
 // old field covered either) and Paybill, without losing any data.
 // This also backfills the default Duka Ledger support number for
 // installs that predate it, without overwriting anyone who already
-// entered their own support contact.
+// entered their own support contact. It also marks pre-existing
+// installs as already onboarded, so the Welcome (Create/Log In)
+// screen only ever appears on a genuinely brand-new device — never
+// retroactively to someone already using the app.
 async function migratePaymentMethodFields(settings) {
-  if (settings.migratedPaymentMethodsV2 && settings.migratedSupportV1) return settings;
+  if (settings.migratedPaymentMethodsV2 && settings.migratedSupportV1 && settings.migratedOnboardingV1) return settings;
 
   const patch = {};
   if (!settings.migratedPaymentMethodsV2) {
@@ -409,6 +414,10 @@ async function migratePaymentMethodFields(settings) {
   if (!settings.migratedSupportV1) {
     patch.migratedSupportV1 = true;
     if (!settings.supportPhone) patch.supportPhone = '0110554040';
+  }
+  if (!settings.migratedOnboardingV1) {
+    patch.migratedOnboardingV1 = true;
+    patch.onboardingComplete = true;
   }
   const updated = { ...settings, ...patch };
   await tx([STORES.settings], 'readwrite', (t) => t.objectStore(STORES.settings).put(updated));

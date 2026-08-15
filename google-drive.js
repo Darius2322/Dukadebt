@@ -16,7 +16,7 @@
    failing silently.
    ========================================================= */
 
-const GOOGLE_CLIENT_ID = '535826355519-7d2ra2qe8a28kmhaf073l74j7mffmimg.apps.googleusercontent.com';
+const GOOGLE_CLIENT_ID = 'PASTE_YOUR_GOOGLE_OAUTH_CLIENT_ID_HERE.apps.googleusercontent.com';
 const GOOGLE_SCOPES = 'https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/userinfo.email';
 const GDRIVE_BACKUP_FILENAME = 'duka-ledger-backup.json';
 
@@ -75,15 +75,40 @@ const GDrive = {
     try {
       await this.requestToken('consent');
       const email = await this.fetchAccountEmail();
+      const existing = await this.findExistingBackupFile();
+
       State.settings = await DB.saveSettings({
         googleDriveConnected: true,
-        googleDriveEmail: email || ''
+        googleDriveEmail: email || '',
+        googleDriveFileId: existing ? existing.id : (State.settings.googleDriveFileId || '')
       });
       this.render();
-      Toast.show('Google Drive connected', 'success');
-      await this.backupNow();
+
+      if (existing) {
+        Toast.show(`Connected. Found a backup from ${Utils.formatDateTimeShort(existing.modifiedTime)} in this Google account — use Restore to bring it onto this device.`, 'success');
+      } else {
+        Toast.show('Google Drive connected. Tap "Backup Now" to save your data there for the first time.', 'success');
+      }
     } catch (err) {
       Toast.show('Could not connect Google Drive. Please try again.', 'error');
+    }
+  },
+
+  // Looks for a backup file this app previously created in the
+  // connected Google account, without needing a locally-stored file
+  // ID — this is what makes "restore on a brand-new device" possible.
+  async findExistingBackupFile() {
+    try {
+      const token = await this.getValidToken();
+      const q = encodeURIComponent(`name='${GDRIVE_BACKUP_FILENAME}' and trashed=false`);
+      const res = await fetch(`https://www.googleapis.com/drive/v3/files?q=${q}&fields=files(id,name,modifiedTime)&orderBy=modifiedTime desc&pageSize=1`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (!res.ok) return null;
+      const data = await res.json();
+      return (data.files && data.files[0]) || null;
+    } catch (err) {
+      return null;
     }
   },
 
@@ -174,6 +199,59 @@ const GDrive = {
     }
   },
 
+  async restoreFromDrive() {
+    if (!navigator.onLine) { Toast.show('You need an internet connection to restore from Google Drive.', 'error'); return; }
+    if (!this.isConfigured() || !this.isLibraryLoaded()) { Toast.show('Google Drive is not available right now.', 'error'); return; }
+
+    const btn = document.getElementById('gdriveRestoreBtn');
+    if (btn) { btn.disabled = true; btn.textContent = 'Checking Drive…'; }
+
+    try {
+      const token = await this.getValidToken();
+      let fileId = State.settings.googleDriveFileId;
+
+      if (!fileId) {
+        const existing = await this.findExistingBackupFile();
+        if (!existing) {
+          Toast.show('No Duka Ledger backup was found in this Google account yet.', 'error');
+          return;
+        }
+        fileId = existing.id;
+      }
+
+      const res = await fetch(`https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (!res.ok) throw new Error('download_failed');
+      const payload = await res.json();
+
+      if (btn) { btn.disabled = false; btn.textContent = '⭳ Restore from Google Drive'; }
+
+      const ok = await confirmDialog({
+        title: 'Restore from Google Drive?',
+        message: `This will replace all customers, transactions, and settings currently on this device with the backup found in Google Drive (${payload.exportedAt ? Utils.formatDateTimeShort(payload.exportedAt) : 'unknown date'}). This cannot be undone.`,
+        confirmLabel: 'Restore & Replace',
+        danger: true,
+        glyph: '⚠'
+      });
+      if (!ok) return;
+
+      await DB.restoreAll(payload);
+      State.settings = await DB.saveSettings({ googleDriveFileId: fileId });
+      Utils.currencySymbol = State.settings.currency || 'KSh';
+      applyTheme(State.settings.theme || 'system');
+      Settings.render();
+      await afterDataChange();
+      switchView('dashboard');
+      Toast.show('Restored from Google Drive', 'success');
+      await Sound.announce('gdrive_restored', 'Google Drive restore complete', 'All data was replaced from your Google Drive backup');
+    } catch (err) {
+      Toast.show(err.message === 'download_failed' ? 'Could not download the backup from Google Drive.' : 'This backup file could not be read.', 'error');
+    } finally {
+      if (btn) { btn.disabled = false; btn.textContent = '⭳ Restore from Google Drive'; }
+    }
+  },
+
   render() {
     const s = State.settings || {};
     const disconnectedEl = document.getElementById('gdriveDisconnectedState');
@@ -196,6 +274,7 @@ const GDrive = {
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('gdriveConnectBtn').addEventListener('click', () => GDrive.connect());
   document.getElementById('gdriveBackupNowBtn').addEventListener('click', () => GDrive.backupNow());
+  document.getElementById('gdriveRestoreBtn').addEventListener('click', () => GDrive.restoreFromDrive());
   document.getElementById('gdriveDisconnectBtn').addEventListener('click', () => GDrive.disconnect());
 });
 

@@ -412,6 +412,7 @@ textarea{ resize:vertical; min-height:70px; }
 .sheet-header h2{ margin:0; font-size:17px; }
 
 .modal-center{ align-items:center; padding:20px; }
+#confirmDialog{ z-index:260; }
 .dialog{
   background:var(--paper); border-radius:var(--radius-lg);
   padding:22px 20px; width:100%; max-width:340px;
@@ -440,7 +441,7 @@ textarea{ resize:vertical; min-height:70px; }
 
 /* =================== Toasts =================== */
 .toast-wrap{
-  position:fixed; top:14px; left:0; right:0; z-index:100;
+  position:fixed; top:14px; left:0; right:0; z-index:270;
   display:flex; flex-direction:column; align-items:center; gap:8px;
   pointer-events:none;
 }
@@ -547,6 +548,13 @@ table.stmt-table td.num, table.stmt-table th.num{ text-align:right; font-family:
   display:flex; align-items:center; justify-content:center;
   padding:24px;
 }
+#welcomeScreen{
+  position:fixed; inset:0; z-index:210;
+  background:var(--paper);
+  display:flex; align-items:center; justify-content:center;
+  padding:24px;
+}
+.welcome-inner{ width:100%; max-width:340px; text-align:center; }
 .lock-inner{ width:100%; max-width:340px; text-align:center; }
 .lock-brand{ margin-bottom:26px; }
 .lock-title{ font-family:var(--font-display); font-size:22px; font-weight:700; margin-bottom:2px; }

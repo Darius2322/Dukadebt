@@ -2,11 +2,19 @@
    app.js — router, dashboard, action sheets, shared UI glue
    ========================================================= */
 
-const APP_VERSION = 'v9';
+const APP_VERSION = 'v11';
 
 // What changed in each release, shown automatically the first time
 // someone opens the app after updating to that version.
 const CHANGELOG = {
+  v11: [
+    'Brand-new installs now start with a simple "Create New Account" or "Log In" screen — logging in restores your data straight from Google Drive on a new device. This only ever shows once; if you\'re reading this, you\'re already past it, and your PIN keeps working exactly as before.'
+  ],
+  v10: [
+    'Added "Restore from Google Drive" — bring your books onto a new device by connecting the same Google account and restoring, no local backup file needed.',
+    'Google Drive backup is now clearly a manual, one-tap action (Backup Now) rather than automatic, so connecting Google Drive for the first time never overwrites an existing backup by surprise.',
+    'Privacy Policy and Terms & Conditions now also have their own standalone pages (not just inside the app) for Google\'s account-linking review process.'
+  ],
   v9: [
     'Added an optional Google Drive backup — connect your Google account in Settings, tap "Backup Now" any time, and see when your data was last backed up.',
     'The About page now shows a rough Downloads and Active Users count for Duka Ledger overall. This uses a random, anonymous per-device ID — no personal or business data leaves your device for this.'
@@ -57,6 +65,7 @@ async function init() {
     Utils.currencySymbol = State.settings.currency || 'KSh';
     applyTheme(State.settings.theme || 'system');
 
+    await Welcome.ensureOnboarded();
     await Lock.ensureUnlocked();
     document.getElementById('app').style.display = '';
 

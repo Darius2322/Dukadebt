@@ -3,7 +3,7 @@
    app loads and works with no network connection at all.
    ========================================================= */
 
-const CACHE_NAME = 'duka-ledger-v9';
+const CACHE_NAME = 'duka-ledger-v11';
 
 const CORE_ASSETS = [
   './',
@@ -15,6 +15,7 @@ const CORE_ASSETS = [
   './db.js',
   './utils.js',
   './lock.js',
+  './welcome.js',
   './sound.js',
   './stats.js',
   './app.js',

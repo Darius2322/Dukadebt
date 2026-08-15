@@ -22,6 +22,25 @@
 
 <div id="toastWrap" class="toast-wrap"></div>
 
+<!-- ================= WELCOME SCREEN (first run only) ================= -->
+<div id="welcomeScreen" style="display:none;">
+  <div class="welcome-inner">
+    <div class="lock-brand">
+      <div class="avatar" style="width:72px; height:72px; margin:0 auto 16px; font-size:25px;">DL</div>
+      <div class="lock-title" style="font-size:26px;">Duka Ledger</div>
+      <div class="muted">Your offline credit book for shopkeepers</div>
+    </div>
+
+    <button class="btn btn-primary" id="welcomeCreateBtn" style="margin-bottom:12px;">Create New Account</button>
+    <button class="btn btn-outline" id="welcomeLoginBtn">↺ Log In &amp; Restore My Data</button>
+
+    <p class="muted" style="font-size:12.5px; margin-top:18px; line-height:1.6;">
+      New here? Tap <strong>Create New Account</strong> to start a fresh ledger on this device.<br><br>
+      Used Duka Ledger before? Tap <strong>Log In</strong> to sign in with the same Google account you backed up with, and bring your customers and records back.
+    </p>
+  </div>
+</div>
+
 <!-- ================= LOCK SCREEN ================= -->
 <div id="lockScreen" style="display:none;">
   <div class="lock-inner">
@@ -271,7 +290,7 @@
 
       <div class="settings-group">
         <h3>Google Drive Backup</h3>
-        <p class="muted" style="margin-bottom:12px;">Keep an automatic copy of your books in your own Google Drive, on top of the local backup below.</p>
+        <p class="muted" style="margin-bottom:12px;">Save a copy of your books to your own Google Drive with one tap, and bring it back onto any device the same way.</p>
 
         <div id="gdriveDisconnectedState">
           <button class="btn btn-outline" id="gdriveConnectBtn">🔗 Connect Google Drive</button>
@@ -281,6 +300,8 @@
           <div class="muted" style="margin-bottom:4px;">Connected as <span id="gdriveEmailText" style="font-weight:600; color:var(--ink);"></span></div>
           <div class="muted" id="gdriveLastBackupText" style="margin-bottom:12px;">Never backed up yet</div>
           <button class="btn btn-primary" id="gdriveBackupNowBtn">☁️ Backup Now</button>
+          <div style="height:10px;"></div>
+          <button class="btn btn-outline" id="gdriveRestoreBtn">⭳ Restore from Google Drive</button>
           <div style="height:10px;"></div>
           <button class="btn btn-outline" id="gdriveDisconnectBtn">Disconnect Google Drive</button>
         </div>
@@ -720,6 +741,7 @@
 <script src="./db.js"></script>
 <script src="./utils.js"></script>
 <script src="./lock.js"></script>
+<script src="./welcome.js"></script>
 <script src="./sound.js"></script>
 <script src="./stats.js"></script>
 <script src="./app.js"></script>
