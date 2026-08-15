@@ -39,6 +39,8 @@ const About = {
 
   open() {
     this.render();
+    Stats.render();
+    Stats.ping();
     openSheet('aboutSheet');
   }
 };

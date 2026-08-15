@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacy Policy — Duka Ledger</title>
+<meta name="description" content="Privacy Policy for Duka Ledger, an offline-first debt book for shopkeepers.">
+<link rel="icon" href="./icon-192.png">
+<link rel="stylesheet" href="./style.css">
+<style>
+  body{ min-height:100vh; padding:32px 18px 60px; }
+  .legal-page{ max-width:640px; margin:0 auto; background:var(--paper); border:1px solid var(--rule); border-radius:16px; padding:28px 24px; }
+  .legal-page h1{ font-family:var(--font-display); font-size:22px; margin:0 0 4px; }
+  .legal-page .updated{ color:var(--ink-soft); font-size:13px; margin-bottom:22px; }
+  .legal-page p{ font-size:14px; line-height:1.7; color:var(--ink-soft); margin:0 0 14px; }
+  .legal-page strong{ color:var(--ink); }
+  .legal-page a{ color:var(--brand); font-weight:600; }
+  .back-link{ display:inline-block; max-width:640px; margin:0 auto 14px; font-size:13.5px; color:var(--brand); font-weight:600; text-decoration:none; }
+  .back-wrap{ max-width:640px; margin:0 auto; }
+</style>
+</head>
+<body>
+
+<div class="back-wrap">
+  <a class="back-link" href="./index.html">← Back to Duka Ledger</a>
+</div>
+
+<div class="legal-page">
+  <h1>Privacy Policy</h1>
+  <div class="updated"><strong>Last updated: August 2026</strong></div>
+
+  <p>Duka Ledger is built to be offline-first and local-only by default. This policy explains exactly what that means, and discloses the two narrow exceptions below.</p>
+
+  <p><strong>1. No server for your business data.</strong> Duka Ledger has no backend server for your books. Customer names, phone numbers, debts, payments, and business settings are stored exclusively in your device's local browser storage (IndexedDB). None of this is uploaded anywhere by this app, unless you explicitly turn on Google Drive backup (see #4).</p>
+
+  <p><strong>2. Contacts access.</strong> If you use "Import from Contacts," your device's contact picker is used only to fill in a name and phone number you choose. The app never reads your full contact list and never stores contacts you don't explicitly import.</p>
+
+  <p><strong>3. Notifications.</strong> If you enable push notifications, your browser handles this permission directly. Notifications are generated entirely on your device.</p>
+
+  <p><strong>4. Optional Google Drive backup.</strong> If you choose to connect Google Drive in Settings, Duka Ledger sends a full backup of your customers, transactions, and settings to a single file in your own Google Drive, using Google's sign-in. This only happens if you tap "Connect Google Drive," and Duka Ledger only ever accesses that single backup file it creates — never anything else in your Drive. This access is provided through Google's <code>drive.file</code> scope, the most restrictive Drive permission Google offers. You can disconnect at any time in Settings; your local data and the app's core features are unaffected either way. Local export/import (below) always works fully offline with no Google account needed.</p>
+
+  <p><strong>5. Local export/import.</strong> When you export a backup, a JSON file is created and saved directly to your device through your browser's normal download mechanism. We never see or receive a copy of this file.</p>
+
+  <p><strong>6. Anonymous usage count.</strong> To show a rough Downloads and Active Users count on the About page, this app generates a random ID for your device (not linked to your name, phone, or business data) and, when you're online, sends that ID and a timestamp to a small counting service. No customer or business data is included. This is the only "tracking" in this app, and it exists purely to count devices — not to identify or profile anyone.</p>
+
+  <p><strong>7. No advertising or third-party trackers.</strong> We do not use advertising SDKs or third-party analytics/tracking scripts. Google's sign-in and Drive APIs are used only if you explicitly connect Google Drive backup, and are governed by <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google's own privacy policy</a> for that connection.</p>
+
+  <p><strong>8. Deleting your data.</strong> Clearing your browser or app storage, or uninstalling the app, permanently deletes all local records. Export a backup or connect Google Drive first if you want to keep them.</p>
+
+  <p><strong>9. Contact.</strong> Questions about this policy can be sent to <strong>0110554040</strong> on WhatsApp, or through the Support Contact details in the app's Settings.</p>
+</div>
+
+</body>
+</html>

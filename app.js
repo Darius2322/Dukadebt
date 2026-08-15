@@ -2,11 +2,15 @@
    app.js — router, dashboard, action sheets, shared UI glue
    ========================================================= */
 
-const APP_VERSION = 'v8';
+const APP_VERSION = 'v9';
 
 // What changed in each release, shown automatically the first time
 // someone opens the app after updating to that version.
 const CHANGELOG = {
+  v9: [
+    'Added an optional Google Drive backup — connect your Google account in Settings, tap "Backup Now" any time, and see when your data was last backed up.',
+    'The About page now shows a rough Downloads and Active Users count for Duka Ledger overall. This uses a random, anonymous per-device ID — no personal or business data leaves your device for this.'
+  ],
   v8: [
     'Added "Refer a Friend" — enter a friend\'s name and number and send a ready-made referral straight to Darius on WhatsApp.'
   ],
@@ -64,6 +68,7 @@ async function init() {
     Reports.render();
     Settings.render();
     await checkAndShowChangelog();
+    Stats.ping();
   } catch (err) {
     console.error(err);
     document.getElementById('app').style.display = '';

@@ -3,17 +3,20 @@
    app loads and works with no network connection at all.
    ========================================================= */
 
-const CACHE_NAME = 'duka-ledger-v8';
+const CACHE_NAME = 'duka-ledger-v9';
 
 const CORE_ASSETS = [
   './',
   './index.html',
+  './privacy.html',
+  './terms.html',
   './manifest.json',
   './style.css',
   './db.js',
   './utils.js',
   './lock.js',
   './sound.js',
+  './stats.js',
   './app.js',
   './customers.js',
   './profile.js',
@@ -25,6 +28,7 @@ const CORE_ASSETS = [
   './notifications.js',
   './history.js',
   './backup.js',
+  './google-drive.js',
   './referral.js',
   './icon-72.png',
   './icon-96.png',
@@ -71,6 +75,16 @@ self.addEventListener('message', (event) => {
 self.addEventListener('fetch', (event) => {
   const req = event.request;
   if (req.method !== 'GET') return;
+
+  const url = new URL(req.url);
+
+  // API routes are dynamic (live counters, Google Drive calls) — never
+  // cache-first these, always hit the network. Also true for calls to
+  // Google's own domains during the Drive backup flow.
+  if (url.pathname.startsWith('/api/') || url.hostname.endsWith('googleapis.com') || url.hostname.endsWith('google.com')) {
+    event.respondWith(fetch(req).catch(() => new Response(JSON.stringify({ ok: false, error: 'offline' }), { headers: { 'Content-Type': 'application/json' } })));
+    return;
+  }
 
   event.respondWith(
     caches.match(req).then((cached) => {

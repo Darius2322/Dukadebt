@@ -235,7 +235,15 @@ const DB = {
       pinHash: '',
       pinSalt: '',
       biometricEnabled: false,
-      biometricCredentialId: ''
+      biometricCredentialId: '',
+      deviceId: '',
+      lastKnownTotalDownloads: null,
+      lastKnownActiveUsers: null,
+      statsUpdatedAt: '',
+      googleDriveConnected: false,
+      googleDriveEmail: '',
+      googleDriveFileId: '',
+      lastGoogleBackupAt: ''
     };
     await tx([STORES.settings], 'readwrite', (t) => t.objectStore(STORES.settings).put(defaults));
     return defaults;

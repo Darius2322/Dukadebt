@@ -35,6 +35,7 @@ const Settings = {
     document.getElementById('settingsPushEnabled').checked = !!s.pushEnabled;
     document.querySelectorAll('#themeSeg button').forEach(b => b.classList.toggle('active', b.dataset.theme === (s.theme || 'system')));
     this.renderSecurity();
+    if (window.GDrive) GDrive.render();
   },
 
   syncMethodFieldVisibility() {
