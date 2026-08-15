@@ -217,6 +217,10 @@ const DB = {
       businessName: 'My Shop',
       businessPhone: '',
       businessLocation: '',
+      ownerName: '',
+      ownerPhone: '',
+      ownerDateJoined: new Date().toISOString().slice(0, 10),
+      migratedOwnerProfileV1: true,
       currency: 'KSh',
       receiptFooter: 'Thank you for your business.',
       theme: 'system',
@@ -394,7 +398,7 @@ async function touchCustomer(t, customerId) {
 // screen only ever appears on a genuinely brand-new device — never
 // retroactively to someone already using the app.
 async function migratePaymentMethodFields(settings) {
-  if (settings.migratedPaymentMethodsV2 && settings.migratedSupportV1 && settings.migratedOnboardingV1) return settings;
+  if (settings.migratedPaymentMethodsV2 && settings.migratedSupportV1 && settings.migratedOnboardingV1 && settings.migratedOwnerProfileV1) return settings;
 
   const patch = {};
   if (!settings.migratedPaymentMethodsV2) {
@@ -418,6 +422,15 @@ async function migratePaymentMethodFields(settings) {
   if (!settings.migratedOnboardingV1) {
     patch.migratedOnboardingV1 = true;
     patch.onboardingComplete = true;
+  }
+  if (!settings.migratedOwnerProfileV1) {
+    // We don't know an existing shopkeeper's real start date, so we
+    // leave Date Joined blank for them to fill in themselves, rather
+    // than guessing with today's date.
+    patch.migratedOwnerProfileV1 = true;
+    if (settings.ownerName === undefined) patch.ownerName = '';
+    if (settings.ownerPhone === undefined) patch.ownerPhone = '';
+    if (settings.ownerDateJoined === undefined) patch.ownerDateJoined = '';
   }
   const updated = { ...settings, ...patch };
   await tx([STORES.settings], 'readwrite', (t) => t.objectStore(STORES.settings).put(updated));

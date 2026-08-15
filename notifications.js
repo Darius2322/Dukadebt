@@ -5,7 +5,7 @@
 const ICONS = {
   customer_added: '👤', customer_updated: '✎', customer_deleted: '🗑',
   debt_added: '➕', debt_updated: '✎', payment_added: '💵', payment_updated: '✎',
-  transaction_deleted: '🗑', backup_exported: '⭳', backup_restored: '⭱',
+  transaction_deleted: '🗑', backup_exported: '⬇️', backup_restored: '⬆️',
   settings_saved: '⚙️', security_pin_set: '🔒', security_pin_removed: '🔓',
   app_updated: '✨'
 };

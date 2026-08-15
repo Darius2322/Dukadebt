@@ -79,7 +79,7 @@
     <div class="topbar-actions">
       <span class="pill" id="connPill"><span class="dot"></span><span class="pill-label">Online</span></span>
       <button class="iconbtn" id="notifBtn" title="Notifications" style="position:relative;">🔔<span class="badge-dot" id="notifBadge" style="display:none;"></span></button>
-      <button class="iconbtn" id="installBtn" title="Install app" style="display:none;">⭳</button>
+      <button class="iconbtn" id="installBtn" title="Install app" style="display:none;">⬇️</button>
       <button class="iconbtn" id="themeToggleBtn" title="Toggle theme">◐</button>
     </div>
   </header>
@@ -179,6 +179,17 @@
     <!-- ============ SETTINGS ============ -->
     <section class="view" id="view-settings">
       <div class="section-title" style="margin-top:0;"><h2>Settings</h2></div>
+
+      <div class="settings-group">
+        <h3>Owner Profile</h3>
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:14px;">
+          <div class="avatar" id="ownerProfileAvatar" style="width:52px; height:52px; font-size:18px; flex-shrink:0;">?</div>
+          <div class="muted" style="font-size:12.5px; line-height:1.5;">This is you — the person running the shop on this device. Shown alongside your business details, separate from Duka Ledger's own founder info in About.</div>
+        </div>
+        <div class="field"><label>Owner Name</label><input type="text" id="settingsOwnerName" placeholder="e.g. Jane Wanjiru"></div>
+        <div class="field"><label>Owner Phone</label><input type="tel" id="settingsOwnerPhone" placeholder="0700 000 000"></div>
+        <div class="field"><label>Date Joined</label><input type="date" id="settingsOwnerDateJoined"></div>
+      </div>
 
       <div class="settings-group">
         <h3>Business Information</h3>
@@ -301,7 +312,7 @@
           <div class="muted" id="gdriveLastBackupText" style="margin-bottom:12px;">Never backed up yet</div>
           <button class="btn btn-primary" id="gdriveBackupNowBtn">☁️ Backup Now</button>
           <div style="height:10px;"></div>
-          <button class="btn btn-outline" id="gdriveRestoreBtn">⭳ Restore from Google Drive</button>
+          <button class="btn btn-outline" id="gdriveRestoreBtn">⬇️ Restore from Google Drive</button>
           <div style="height:10px;"></div>
           <button class="btn btn-outline" id="gdriveDisconnectBtn">Disconnect Google Drive</button>
         </div>
@@ -312,9 +323,9 @@
       <div class="settings-group">
         <h3>Backup &amp; Restore</h3>
         <p class="muted" style="margin-bottom:12px;">Your data lives only on this device. Export a backup regularly so you never lose your records.</p>
-        <button class="btn btn-outline" id="exportBackupBtn">⭳ Export Backup (.json)</button>
+        <button class="btn btn-outline" id="exportBackupBtn">⬇️ Export Backup (.json)</button>
         <div style="height:10px;"></div>
-        <label class="btn btn-outline" for="restoreFileInput" style="cursor:pointer;">⭱ Choose Backup File to Restore</label>
+        <label class="btn btn-outline" for="restoreFileInput" style="cursor:pointer;">⬆️ Choose Backup File to Restore</label>
         <input type="file" id="restoreFileInput" accept="application/json,.json" style="display:none;">
         <div class="muted" id="restoreFileName" style="margin:8px 0;">No file selected</div>
         <button class="btn btn-danger" id="restoreConfirmBtn" disabled>Restore &amp; Replace All Data</button>
@@ -511,7 +522,7 @@
     </div>
     <button class="btn btn-primary" id="statementShareBtn" style="margin-top:6px; background:#25D366; border-color:#25D366;">💬 Share via WhatsApp</button>
     <div class="btn-row" style="margin-top:10px;">
-      <button class="btn btn-outline" id="statementDownloadBtn">⭳ Save as Image</button>
+      <button class="btn btn-outline" id="statementDownloadBtn">⬇️ Save as Image</button>
       <button class="btn btn-outline" id="statementPrintBtn">🖨 Print</button>
     </div>
   </div>

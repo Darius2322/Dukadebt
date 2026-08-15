@@ -5,6 +5,10 @@
 const Settings = {
   render() {
     const s = State.settings;
+    document.getElementById('settingsOwnerName').value = s.ownerName || '';
+    document.getElementById('settingsOwnerPhone').value = s.ownerPhone || '';
+    document.getElementById('settingsOwnerDateJoined').value = s.ownerDateJoined || '';
+    document.getElementById('ownerProfileAvatar').textContent = s.ownerName ? Utils.initials(s.ownerName) : '?';
     document.getElementById('settingsBusinessName').value = s.businessName || '';
     document.getElementById('settingsBusinessPhone').value = s.businessPhone || '';
     document.getElementById('settingsBusinessLocation').value = s.businessLocation || '';
@@ -54,6 +58,10 @@ const Settings = {
   },
 
   async save() {
+    const ownerName = Utils.clean(document.getElementById('settingsOwnerName').value, 100);
+    const ownerPhone = Utils.clean(document.getElementById('settingsOwnerPhone').value, 40);
+    const ownerDateJoined = document.getElementById('settingsOwnerDateJoined').value || '';
+
     const businessName = Utils.clean(document.getElementById('settingsBusinessName').value, 100) || 'My Shop';
     const businessPhone = Utils.clean(document.getElementById('settingsBusinessPhone').value, 40);
     const businessLocation = Utils.clean(document.getElementById('settingsBusinessLocation').value, 150);
@@ -82,6 +90,7 @@ const Settings = {
     const soundEnabled = document.getElementById('settingsSoundEnabled').checked;
 
     State.settings = await DB.saveSettings({
+      ownerName, ownerPhone, ownerDateJoined,
       businessName, businessPhone, businessLocation, currency, receiptFooter, allowOverpayment,
       methodTillEnabled, methodTillNumber, methodTillName,
       methodPochiEnabled, methodPochiNumber, methodPochiName,
@@ -176,6 +185,9 @@ const Settings = {
 };
 
 document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('settingsOwnerName').addEventListener('input', (e) => {
+    document.getElementById('ownerProfileAvatar').textContent = e.target.value.trim() ? Utils.initials(e.target.value) : '?';
+  });
   ['methodTillEnabled', 'methodPochiEnabled', 'methodSendEnabled', 'methodPaybillEnabled', 'methodOtherEnabled'].forEach(id => {
     document.getElementById(id).addEventListener('change', () => Settings.syncMethodFieldVisibility());
   });

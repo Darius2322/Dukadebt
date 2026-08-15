@@ -33,6 +33,26 @@ const GDrive = {
     return typeof google !== 'undefined' && google.accounts && google.accounts.oauth2;
   },
 
+  // The Google script tag loads async in the background and can take
+  // a while on a slow connection. Rather than failing the moment it
+  // isn't ready yet, wait up to ~7 seconds, checking repeatedly,
+  // before concluding it truly isn't available.
+  waitForLibrary(timeoutMs = 7000) {
+    return new Promise((resolve) => {
+      if (this.isLibraryLoaded()) { resolve(true); return; }
+      const start = Date.now();
+      const poll = setInterval(() => {
+        if (this.isLibraryLoaded()) {
+          clearInterval(poll);
+          resolve(true);
+        } else if (Date.now() - start > timeoutMs) {
+          clearInterval(poll);
+          resolve(false);
+        }
+      }, 250);
+    });
+  },
+
   ensureTokenClient() {
     if (gTokenClient) return gTokenClient;
     gTokenClient = google.accounts.oauth2.initTokenClient({
@@ -68,8 +88,8 @@ const GDrive = {
       Toast.show('Google Drive backup is not set up yet on this app.', 'error');
       return;
     }
-    if (!this.isLibraryLoaded()) {
-      Toast.show('Could not reach Google. Check your internet connection and try again.', 'error');
+    if (!(await this.waitForLibrary())) {
+      Toast.show('Could not reach Google — your connection may be slow. Please try again.', 'error');
       return;
     }
     try {
@@ -150,10 +170,17 @@ const GDrive = {
 
   async backupNow() {
     if (!navigator.onLine) { Toast.show('You need an internet connection to back up to Google Drive.', 'error'); return; }
-    if (!this.isConfigured() || !this.isLibraryLoaded()) { Toast.show('Google Drive is not available right now.', 'error'); return; }
+    if (!this.isConfigured()) { Toast.show('Google Drive is not available right now.', 'error'); return; }
 
     const btn = document.getElementById('gdriveBackupNowBtn');
-    if (btn) { btn.disabled = true; btn.textContent = 'Backing up…'; }
+    if (btn) { btn.disabled = true; btn.textContent = 'Connecting…'; }
+
+    if (!(await this.waitForLibrary())) {
+      Toast.show('Could not reach Google — your connection may be slow. Please try again.', 'error');
+      if (btn) { btn.disabled = false; btn.textContent = '☁️ Backup Now'; }
+      return;
+    }
+    if (btn) { btn.textContent = 'Backing up…'; }
 
     try {
       const token = await this.getValidToken();
@@ -201,10 +228,17 @@ const GDrive = {
 
   async restoreFromDrive() {
     if (!navigator.onLine) { Toast.show('You need an internet connection to restore from Google Drive.', 'error'); return; }
-    if (!this.isConfigured() || !this.isLibraryLoaded()) { Toast.show('Google Drive is not available right now.', 'error'); return; }
+    if (!this.isConfigured()) { Toast.show('Google Drive is not available right now.', 'error'); return; }
 
     const btn = document.getElementById('gdriveRestoreBtn');
-    if (btn) { btn.disabled = true; btn.textContent = 'Checking Drive…'; }
+    if (btn) { btn.disabled = true; btn.textContent = 'Connecting…'; }
+
+    if (!(await this.waitForLibrary())) {
+      Toast.show('Could not reach Google — your connection may be slow. Please try again.', 'error');
+      if (btn) { btn.disabled = false; btn.textContent = '⬇️ Restore from Google Drive'; }
+      return;
+    }
+    if (btn) { btn.textContent = 'Checking Drive…'; }
 
     try {
       const token = await this.getValidToken();
@@ -225,7 +259,7 @@ const GDrive = {
       if (!res.ok) throw new Error('download_failed');
       const payload = await res.json();
 
-      if (btn) { btn.disabled = false; btn.textContent = '⭳ Restore from Google Drive'; }
+      if (btn) { btn.disabled = false; btn.textContent = '⬇️ Restore from Google Drive'; }
 
       const ok = await confirmDialog({
         title: 'Restore from Google Drive?',
@@ -248,7 +282,7 @@ const GDrive = {
     } catch (err) {
       Toast.show(err.message === 'download_failed' ? 'Could not download the backup from Google Drive.' : 'This backup file could not be read.', 'error');
     } finally {
-      if (btn) { btn.disabled = false; btn.textContent = '⭳ Restore from Google Drive'; }
+      if (btn) { btn.disabled = false; btn.textContent = '⬇️ Restore from Google Drive'; }
     }
   },
 

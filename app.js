@@ -2,11 +2,16 @@
    app.js — router, dashboard, action sheets, shared UI glue
    ========================================================= */
 
-const APP_VERSION = 'v11';
+const APP_VERSION = 'v12';
 
 // What changed in each release, shown automatically the first time
 // someone opens the app after updating to that version.
 const CHANGELOG = {
+  v12: [
+    'Fixed "Google Drive is not available" errors on slower connections — the app now waits a few seconds for Google to finish loading instead of giving up immediately.',
+    'Fixed a broken icon on the Restore from Google Drive button.',
+    'Added an Owner Profile in Settings — your name, phone, and the date you joined — alongside Business Information. Both are fully editable any time.'
+  ],
   v11: [
     'Brand-new installs now start with a simple "Create New Account" or "Log In" screen — logging in restores your data straight from Google Drive on a new device. This only ever shows once; if you\'re reading this, you\'re already past it, and your PIN keeps working exactly as before.'
   ],
