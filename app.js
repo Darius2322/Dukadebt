@@ -2,11 +2,14 @@
    app.js — router, dashboard, action sheets, shared UI glue
    ========================================================= */
 
-const APP_VERSION = 'v12';
+const APP_VERSION = 'v13';
 
 // What changed in each release, shown automatically the first time
 // someone opens the app after updating to that version.
 const CHANGELOG = {
+  v13: [
+    'Fixed Google Drive backup breaking after every app update — the Client ID now lives in its own file (config.js) that stays untouched by future updates, instead of resetting every time.'
+  ],
   v12: [
     'Fixed "Google Drive is not available" errors on slower connections — the app now waits a few seconds for Google to finish loading instead of giving up immediately.',
     'Fixed a broken icon on the Restore from Google Drive button.',

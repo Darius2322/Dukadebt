@@ -9,14 +9,12 @@
    Drive. Local JSON export/import (backup.js) keeps working
    fully offline regardless of whether this is connected.
 
-   REQUIRED SETUP (one-time, done by the app owner, not the end
-   user): create an OAuth Client ID in Google Cloud Console and
-   paste it into GOOGLE_CLIENT_ID below. Until that's done, the
-   "Connect Google Drive" button shows a clear message instead of
-   failing silently.
+   The OAuth Client ID lives in config.js, not in this file. That
+   file is intentionally never regenerated when this file is
+   updated, so it survives every future version without needing
+   to be re-entered.
    ========================================================= */
 
-const GOOGLE_CLIENT_ID = 'PASTE_YOUR_GOOGLE_OAUTH_CLIENT_ID_HERE.apps.googleusercontent.com';
 const GOOGLE_SCOPES = 'https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/userinfo.email';
 const GDRIVE_BACKUP_FILENAME = 'duka-ledger-backup.json';
 
@@ -25,8 +23,13 @@ let gAccessToken = null;
 let gTokenExpiresAt = 0;
 
 const GDrive = {
+  getClientId() {
+    return (window.DUKA_CONFIG && window.DUKA_CONFIG.GOOGLE_CLIENT_ID || '').trim();
+  },
+
   isConfigured() {
-    return GOOGLE_CLIENT_ID && !GOOGLE_CLIENT_ID.startsWith('PASTE_');
+    const id = this.getClientId();
+    return !!id && !id.startsWith('PASTE_');
   },
 
   isLibraryLoaded() {
@@ -56,7 +59,7 @@ const GDrive = {
   ensureTokenClient() {
     if (gTokenClient) return gTokenClient;
     gTokenClient = google.accounts.oauth2.initTokenClient({
-      client_id: GOOGLE_CLIENT_ID,
+      client_id: this.getClientId(),
       scope: GOOGLE_SCOPES,
       callback: () => {} // overridden per-call below
     });
