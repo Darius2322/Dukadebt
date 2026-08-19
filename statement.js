@@ -335,7 +335,7 @@ const Statement = {
       message: 'The receipt image will download, then WhatsApp will open with the chat and message ready. Tap the 📎 attach icon in WhatsApp and choose the image to finish sending.',
       confirmLabel: 'Continue',
       danger: false,
-      glyph: '💬'
+      icon: 'message-circle'
     });
     if (!ok) return;
 

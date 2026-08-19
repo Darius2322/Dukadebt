@@ -286,6 +286,7 @@ main{ padding:16px; }
   cursor:pointer;
   width:100%;
 }
+.btn svg, .iconbtn svg, .more-ic svg, .ic svg{ flex-shrink:0; }
 .btn:active{ transform:scale(0.98); }
 .btn-primary{ background:var(--brand); color:#fff; }
 .btn-primary:hover{ background:var(--brand-dark); }
@@ -420,7 +421,7 @@ textarea{ resize:vertical; min-height:70px; }
   animation:pop .16s ease;
 }
 @keyframes pop{ from{ transform:scale(0.95); opacity:0; } to{ transform:none; opacity:1; } }
-.dialog .glyph{ font-size:30px; margin-bottom:8px; }
+.dialog .glyph{ margin-bottom:8px; display:flex; justify-content:center; }
 .dialog h3{ margin:0 0 8px; font-size:16.5px; }
 .dialog p{ margin:0 0 18px; font-size:13.5px; color:var(--ink-soft); line-height:1.5; }
 

@@ -2,11 +2,15 @@
    app.js — router, dashboard, action sheets, shared UI glue
    ========================================================= */
 
-const APP_VERSION = 'v13';
+const APP_VERSION = 'v14';
 
 // What changed in each release, shown automatically the first time
 // someone opens the app after updating to that version.
 const CHANGELOG = {
+  v14: [
+    'Replaced emoji icons throughout the app with a proper, consistent icon set — buttons, navigation, notifications, and history now use clean vector icons instead of emoji, which can render inconsistently across phones.',
+    'These icons are built into the app itself (not loaded from the internet), so they display instantly and reliably even offline.'
+  ],
   v13: [
     'Fixed Google Drive backup breaking after every app update — the Client ID now lives in its own file (config.js) that stays untouched by future updates, instead of resetting every time.'
   ],
@@ -384,10 +388,12 @@ function wireOverlayDismiss() {
 }
 
 // Reusable confirm dialog. Returns a Promise<boolean>.
-function confirmDialog({ title, message, confirmLabel = 'Confirm', danger = true, glyph = '!' }) {
+function confirmDialog({ title, message, confirmLabel = 'Confirm', danger = true, icon = 'alert-triangle' }) {
   return new Promise((resolve) => {
     const overlay = document.getElementById('confirmDialog');
-    overlay.querySelector('.glyph').textContent = glyph;
+    const glyphEl = overlay.querySelector('.glyph');
+    glyphEl.innerHTML = Icon(icon, { size: 30 });
+    glyphEl.style.color = danger ? 'var(--danger)' : 'var(--brand)';
     overlay.querySelector('.dlg-title').textContent = title;
     overlay.querySelector('.dlg-message').textContent = message;
     const okBtn = overlay.querySelector('.dlg-confirm');

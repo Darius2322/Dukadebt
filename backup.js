@@ -35,7 +35,7 @@ const Backup = {
       message: 'This will replace all customers, transactions, and settings currently on this device with the contents of the backup file. This cannot be undone.',
       confirmLabel: 'Restore & Replace',
       danger: true,
-      glyph: '⚠'
+      icon: 'alert-triangle'
     });
     if (!ok) return;
 

@@ -151,7 +151,7 @@ const GDrive = {
       message: 'Duka Ledger will stop backing up to Google Drive. The backup file already saved in your Drive will not be deleted, and your local data is unaffected.',
       confirmLabel: 'Disconnect',
       danger: true,
-      glyph: '⚠'
+      icon: 'alert-triangle'
     });
     if (!ok) return;
 
@@ -176,14 +176,14 @@ const GDrive = {
     if (!this.isConfigured()) { Toast.show('Google Drive is not available right now.', 'error'); return; }
 
     const btn = document.getElementById('gdriveBackupNowBtn');
-    if (btn) { btn.disabled = true; btn.textContent = 'Connecting…'; }
+    if (btn) { btn.disabled = true; btn.innerHTML = 'Connecting…'; }
 
     if (!(await this.waitForLibrary())) {
       Toast.show('Could not reach Google — your connection may be slow. Please try again.', 'error');
-      if (btn) { btn.disabled = false; btn.textContent = '☁️ Backup Now'; }
+      if (btn) { btn.disabled = false; btn.innerHTML = Icon('cloud') + ' Backup Now'; }
       return;
     }
-    if (btn) { btn.textContent = 'Backing up…'; }
+    if (btn) { btn.innerHTML = 'Backing up…'; }
 
     try {
       const token = await this.getValidToken();
@@ -225,7 +225,7 @@ const GDrive = {
     } catch (err) {
       Toast.show('Google Drive backup failed. Please try again.', 'error');
     } finally {
-      if (btn) { btn.disabled = false; btn.textContent = '☁️ Backup Now'; }
+      if (btn) { btn.disabled = false; btn.innerHTML = Icon('cloud') + ' Backup Now'; }
     }
   },
 
@@ -234,14 +234,14 @@ const GDrive = {
     if (!this.isConfigured()) { Toast.show('Google Drive is not available right now.', 'error'); return; }
 
     const btn = document.getElementById('gdriveRestoreBtn');
-    if (btn) { btn.disabled = true; btn.textContent = 'Connecting…'; }
+    if (btn) { btn.disabled = true; btn.innerHTML = 'Connecting…'; }
 
     if (!(await this.waitForLibrary())) {
       Toast.show('Could not reach Google — your connection may be slow. Please try again.', 'error');
-      if (btn) { btn.disabled = false; btn.textContent = '⬇️ Restore from Google Drive'; }
+      if (btn) { btn.disabled = false; btn.innerHTML = Icon('download') + ' Restore from Google Drive'; }
       return;
     }
-    if (btn) { btn.textContent = 'Checking Drive…'; }
+    if (btn) { btn.innerHTML = 'Checking Drive…'; }
 
     try {
       const token = await this.getValidToken();
@@ -262,14 +262,14 @@ const GDrive = {
       if (!res.ok) throw new Error('download_failed');
       const payload = await res.json();
 
-      if (btn) { btn.disabled = false; btn.textContent = '⬇️ Restore from Google Drive'; }
+      if (btn) { btn.disabled = false; btn.innerHTML = Icon('download') + ' Restore from Google Drive'; }
 
       const ok = await confirmDialog({
         title: 'Restore from Google Drive?',
         message: `This will replace all customers, transactions, and settings currently on this device with the backup found in Google Drive (${payload.exportedAt ? Utils.formatDateTimeShort(payload.exportedAt) : 'unknown date'}). This cannot be undone.`,
         confirmLabel: 'Restore & Replace',
         danger: true,
-        glyph: '⚠'
+        icon: 'alert-triangle'
       });
       if (!ok) return;
 
@@ -285,7 +285,7 @@ const GDrive = {
     } catch (err) {
       Toast.show(err.message === 'download_failed' ? 'Could not download the backup from Google Drive.' : 'This backup file could not be read.', 'error');
     } finally {
-      if (btn) { btn.disabled = false; btn.textContent = '⬇️ Restore from Google Drive'; }
+      if (btn) { btn.disabled = false; btn.innerHTML = Icon('download') + ' Restore from Google Drive'; }
     }
   },
 

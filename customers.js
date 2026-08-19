@@ -131,7 +131,7 @@ const Customers = {
         : `This will permanently remove ${customer.name} and their transaction history. This cannot be undone.`,
       confirmLabel: 'Delete Customer',
       danger: true,
-      glyph: '⚠'
+      icon: 'alert-triangle'
     });
     if (!ok) return;
     try {

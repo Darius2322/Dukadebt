@@ -163,7 +163,7 @@ const Transactions = {
         message: `This payment of ${Utils.formatMoney(amount)} is more than the outstanding balance of ${Utils.formatMoney(effectiveOutstanding)}. Record it anyway as an overpayment?`,
         confirmLabel: 'Record Anyway',
         danger: false,
-        glyph: '?'
+        icon: 'info'
       });
       if (!ok) return;
     }
@@ -231,7 +231,7 @@ const Transactions = {
       message: `This will remove this ${t.type} of ${Utils.formatMoney(t.amount)} and recalculate the customer's balance. This cannot be undone.`,
       confirmLabel: 'Delete',
       danger: true,
-      glyph: '⚠'
+      icon: 'alert-triangle'
     });
     if (!ok) return;
     try {

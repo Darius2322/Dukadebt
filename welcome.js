@@ -49,7 +49,7 @@ const Welcome = {
     }
 
     const btn = document.getElementById('welcomeLoginBtn');
-    if (btn) { btn.disabled = true; btn.textContent = 'Connecting…'; }
+    if (btn) { btn.disabled = true; btn.innerHTML = 'Connecting…'; }
 
     try {
       await GDrive.connect(); // signs in, links an existing backup if one is found, own error toasts
@@ -59,7 +59,7 @@ const Welcome = {
         Toast.show('No existing backup was found on this Google account. You can start fresh, or try a different account.', 'error');
       }
     } finally {
-      if (btn) { btn.disabled = false; btn.textContent = '↺ Log In & Restore My Data'; }
+      if (btn) { btn.disabled = false; btn.innerHTML = Icon('rotate-ccw') + ' Log In & Restore My Data'; }
     }
 
     // Connected (whether or not they went through with restoring) —

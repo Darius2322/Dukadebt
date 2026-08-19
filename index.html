@@ -32,7 +32,7 @@
     </div>
 
     <button class="btn btn-primary" id="welcomeCreateBtn" style="margin-bottom:12px;">Create New Account</button>
-    <button class="btn btn-outline" id="welcomeLoginBtn">↺ Log In &amp; Restore My Data</button>
+    <button class="btn btn-outline" id="welcomeLoginBtn"><i data-icon="rotate-ccw"></i> Log In &amp; Restore My Data</button>
 
     <p class="muted" style="font-size:12.5px; margin-top:18px; line-height:1.6;">
       New here? Tap <strong>Create New Account</strong> to start a fresh ledger on this device.<br><br>
@@ -59,7 +59,7 @@
       <button data-key="1">1</button><button data-key="2">2</button><button data-key="3">3</button>
       <button data-key="4">4</button><button data-key="5">5</button><button data-key="6">6</button>
       <button data-key="7">7</button><button data-key="8">8</button><button data-key="9">9</button>
-      <button data-key="bio" id="pinBioBtn">👆</button>
+      <button data-key="bio" id="pinBioBtn"><i data-icon="fingerprint"></i></button>
       <button data-key="0">0</button>
       <button data-key="back">⌫</button>
     </div>
@@ -78,8 +78,8 @@
     </div>
     <div class="topbar-actions">
       <span class="pill" id="connPill"><span class="dot"></span><span class="pill-label">Online</span></span>
-      <button class="iconbtn" id="notifBtn" title="Notifications" style="position:relative;">🔔<span class="badge-dot" id="notifBadge" style="display:none;"></span></button>
-      <button class="iconbtn" id="installBtn" title="Install app" style="display:none;">⬇️</button>
+      <button class="iconbtn" id="notifBtn" title="Notifications" style="position:relative;"><i data-icon="bell"></i><span class="badge-dot" id="notifBadge" style="display:none;"></span></button>
+      <button class="iconbtn" id="installBtn" title="Install app" style="display:none;"><i data-icon="download"></i></button>
       <button class="iconbtn" id="themeToggleBtn" title="Toggle theme">◐</button>
     </div>
   </header>
@@ -93,32 +93,32 @@
       <div class="section-title"><h2>More</h2></div>
       <div class="more-grid">
         <div class="more-tile" id="referMenuBtn">
-          <div class="more-ic">👥</div>
+          <div class="more-ic"><i data-icon="users"></i></div>
           <div class="more-label">Refer a Friend</div>
           <div class="more-sub">Tell someone about Duka Ledger</div>
         </div>
         <div class="more-tile" id="guideMenuBtn">
-          <div class="more-ic">📘</div>
+          <div class="more-ic"><i data-icon="book-open"></i></div>
           <div class="more-label">How to Use</div>
           <div class="more-sub">Quick guide to the app</div>
         </div>
         <div class="more-tile" id="historyMenuBtn">
-          <div class="more-ic">📜</div>
+          <div class="more-ic"><i data-icon="history"></i></div>
           <div class="more-label">History</div>
           <div class="more-sub">Every record, in order</div>
         </div>
         <div class="more-tile" id="aboutMenuBtn">
-          <div class="more-ic">ℹ️</div>
+          <div class="more-ic"><i data-icon="info"></i></div>
           <div class="more-label">About</div>
           <div class="more-sub">Founder &amp; support</div>
         </div>
         <div class="more-tile" id="termsMenuBtn">
-          <div class="more-ic">📄</div>
+          <div class="more-ic"><i data-icon="file-text"></i></div>
           <div class="more-label">Terms</div>
           <div class="more-sub">Terms &amp; Conditions</div>
         </div>
         <div class="more-tile" id="privacyMenuBtn">
-          <div class="more-ic">🔐</div>
+          <div class="more-ic"><i data-icon="shield-check"></i></div>
           <div class="more-label">Privacy</div>
           <div class="more-sub">Privacy Policy</div>
         </div>
@@ -258,7 +258,7 @@
 
       <div class="settings-group">
         <div class="soda-card">
-          <div class="soda-emoji">🥤</div>
+          <div class="soda-emoji"><i data-icon="cup-soda" data-icon-size="28"></i></div>
           <div class="soda-text">
             <div class="soda-title">Enjoying Duka Ledger?</div>
             <div class="soda-sub">Buy the developer a soda</div>
@@ -285,7 +285,7 @@
       <div class="settings-group">
         <h3>App Updates</h3>
         <p class="muted" style="margin-bottom:12px;">Duka Ledger checks for updates automatically. Use this if you just published a new version and want to check right now.</p>
-        <button class="btn btn-outline" id="checkUpdatesBtn">🔄 Check for Updates</button>
+        <button class="btn btn-outline" id="checkUpdatesBtn"><i data-icon="refresh-cw"></i> Check for Updates</button>
       </div>
 
       <div class="settings-group">
@@ -304,15 +304,15 @@
         <p class="muted" style="margin-bottom:12px;">Save a copy of your books to your own Google Drive with one tap, and bring it back onto any device the same way.</p>
 
         <div id="gdriveDisconnectedState">
-          <button class="btn btn-outline" id="gdriveConnectBtn">🔗 Connect Google Drive</button>
+          <button class="btn btn-outline" id="gdriveConnectBtn"><i data-icon="link"></i> Connect Google Drive</button>
         </div>
 
         <div id="gdriveConnectedState" style="display:none;">
           <div class="muted" style="margin-bottom:4px;">Connected as <span id="gdriveEmailText" style="font-weight:600; color:var(--ink);"></span></div>
           <div class="muted" id="gdriveLastBackupText" style="margin-bottom:12px;">Never backed up yet</div>
-          <button class="btn btn-primary" id="gdriveBackupNowBtn">☁️ Backup Now</button>
+          <button class="btn btn-primary" id="gdriveBackupNowBtn"><i data-icon="cloud"></i> Backup Now</button>
           <div style="height:10px;"></div>
-          <button class="btn btn-outline" id="gdriveRestoreBtn">⬇️ Restore from Google Drive</button>
+          <button class="btn btn-outline" id="gdriveRestoreBtn"><i data-icon="download"></i> Restore from Google Drive</button>
           <div style="height:10px;"></div>
           <button class="btn btn-outline" id="gdriveDisconnectBtn">Disconnect Google Drive</button>
         </div>
@@ -323,9 +323,9 @@
       <div class="settings-group">
         <h3>Backup &amp; Restore</h3>
         <p class="muted" style="margin-bottom:12px;">Your data lives only on this device. Export a backup regularly so you never lose your records.</p>
-        <button class="btn btn-outline" id="exportBackupBtn">⬇️ Export Backup (.json)</button>
+        <button class="btn btn-outline" id="exportBackupBtn"><i data-icon="download"></i> Export Backup (.json)</button>
         <div style="height:10px;"></div>
-        <label class="btn btn-outline" for="restoreFileInput" style="cursor:pointer;">⬆️ Choose Backup File to Restore</label>
+        <label class="btn btn-outline" for="restoreFileInput" style="cursor:pointer;"><i data-icon="upload"></i> Choose Backup File to Restore</label>
         <input type="file" id="restoreFileInput" accept="application/json,.json" style="display:none;">
         <div class="muted" id="restoreFileName" style="margin:8px 0;">No file selected</div>
         <button class="btn btn-danger" id="restoreConfirmBtn" disabled>Restore &amp; Replace All Data</button>
@@ -356,13 +356,13 @@
 
     <!-- ============ CUSTOMER PROFILE ============ -->
     <section class="view" id="view-profile">
-      <button class="link-btn" style="margin-bottom:8px;" onclick="switchView('customers')">← Back to Customers</button>
+      <button class="link-btn" style="margin-bottom:8px;" onclick="switchView('customers')"><i data-icon="chevron-left" data-icon-size="16"></i> Back to Customers</button>
       <div id="profileContent"></div>
     </section>
 
   </main>
 
-  <button class="scroll-top-btn" id="scrollTopBtn" aria-label="Scroll to top">↑</button>
+  <button class="scroll-top-btn" id="scrollTopBtn" aria-label="Scroll to top"><i data-icon="arrow-up"></i></button>
 
   <button class="fab" id="fabBtn" aria-label="Add">+</button>
 
@@ -400,10 +400,10 @@
 <div class="overlay" id="fabSheet">
   <div class="sheet">
     <div class="grabber"></div>
-    <div class="sheet-header"><h2>Add</h2><button class="iconbtn" data-close-sheet>✕</button></div>
+    <div class="sheet-header"><h2>Add</h2><button class="iconbtn" data-close-sheet><i data-icon="x"></i></button></div>
     <div class="sheet-actions">
       <div class="action-row" id="fabAddCustomer">
-        <div class="ic customer">👤</div>
+        <div class="ic customer"><i data-icon="user"></i></div>
         <div><div class="t">Add Customer</div><div class="s">Register a new customer</div></div>
       </div>
       <div class="action-row" id="fabRecordDebt">
@@ -411,7 +411,7 @@
         <div><div class="t">Record Debt</div><div class="s">Add items or cash taken on credit</div></div>
       </div>
       <div class="action-row" id="fabRecordPayment">
-        <div class="ic payment">💵</div>
+        <div class="ic payment"><i data-icon="banknote"></i></div>
         <div><div class="t">Record Payment</div><div class="s">Log money received from a customer</div></div>
       </div>
     </div>
@@ -422,7 +422,7 @@
 <div class="overlay" id="customerPickerSheet">
   <div class="sheet">
     <div class="grabber"></div>
-    <div class="sheet-header"><h2>Select Customer</h2><button class="iconbtn" data-close-sheet>✕</button></div>
+    <div class="sheet-header"><h2>Select Customer</h2><button class="iconbtn" data-close-sheet><i data-icon="x"></i></button></div>
     <div class="searchbar">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       <input type="text" id="pickerSearchInput" placeholder="Search customers">
@@ -435,8 +435,8 @@
 <div class="overlay" id="customerFormSheet">
   <div class="sheet">
     <div class="grabber"></div>
-    <div class="sheet-header"><h2 id="customerFormTitle">Add Customer</h2><button class="iconbtn" data-close-sheet>✕</button></div>
-    <button class="btn btn-outline" id="importContactBtn" style="display:none; margin-bottom:16px;">📇 Import from Contacts</button>
+    <div class="sheet-header"><h2 id="customerFormTitle">Add Customer</h2><button class="iconbtn" data-close-sheet><i data-icon="x"></i></button></div>
+    <button class="btn btn-outline" id="importContactBtn" style="display:none; margin-bottom:16px;"><i data-icon="paperclip"></i> Import from Contacts</button>
     <div class="field"><label>Full Name *</label><input type="text" id="custName" placeholder="e.g. John Otieno"></div>
     <div class="field"><label>Phone Number</label><input type="tel" id="custPhone" placeholder="0712 345 678"></div>
     <div class="field"><label>Address / Location</label><input type="text" id="custAddress" placeholder="Optional"></div>
@@ -450,7 +450,7 @@
 <div class="overlay" id="debtFormSheet">
   <div class="sheet">
     <div class="grabber"></div>
-    <div class="sheet-header"><h2 id="debtFormTitle">Record Debt</h2><button class="iconbtn" data-close-sheet>✕</button></div>
+    <div class="sheet-header"><h2 id="debtFormTitle">Record Debt</h2><button class="iconbtn" data-close-sheet><i data-icon="x"></i></button></div>
     <div class="muted" style="margin-bottom:12px;">Customer: <strong id="debtCustomerName">—</strong></div>
     <div class="field">
       <label>Amount *</label>
@@ -473,7 +473,7 @@
 <div class="overlay" id="paymentFormSheet">
   <div class="sheet">
     <div class="grabber"></div>
-    <div class="sheet-header"><h2 id="paymentFormTitle">Record Payment</h2><button class="iconbtn" data-close-sheet>✕</button></div>
+    <div class="sheet-header"><h2 id="paymentFormTitle">Record Payment</h2><button class="iconbtn" data-close-sheet><i data-icon="x"></i></button></div>
     <div class="muted" style="margin-bottom:4px;">Customer: <strong id="paymentCustomerName">—</strong></div>
     <div class="muted" style="margin-bottom:12px;">Outstanding balance: <strong id="paymentOutstanding">—</strong></div>
     <div class="field">
@@ -483,13 +483,13 @@
     <div class="field">
       <label>Payment Method</label>
       <div class="method-grid" id="paymentMethodSeg">
-        <button data-method="Cash" class="active">💵 Cash</button>
-        <button data-method="Till">🏪 Till</button>
-        <button data-method="Pochi">📱 Pochi</button>
-        <button data-method="Send Money">➡️ Send Money</button>
-        <button data-method="Paybill">🧾 Paybill</button>
-        <button data-method="Bank">🏦 Bank</button>
-        <button data-method="Other">✳️ Other</button>
+        <button data-method="Cash" class="active"><i data-icon="banknote" data-icon-size="16"></i> Cash</button>
+        <button data-method="Till"><i data-icon="store" data-icon-size="16"></i> Till</button>
+        <button data-method="Pochi"><i data-icon="smartphone" data-icon-size="16"></i> Pochi</button>
+        <button data-method="Send Money"><i data-icon="send" data-icon-size="16"></i> Send Money</button>
+        <button data-method="Paybill"><i data-icon="receipt" data-icon-size="16"></i> Paybill</button>
+        <button data-method="Bank"><i data-icon="landmark" data-icon-size="16"></i> Bank</button>
+        <button data-method="Other"><i data-icon="more-horizontal" data-icon-size="16"></i> Other</button>
       </div>
     </div>
     <div class="field" id="confirmationNameField" style="display:none;">
@@ -513,17 +513,17 @@
 <div class="overlay" id="statementSheet">
   <div class="sheet">
     <div class="grabber"></div>
-    <div class="sheet-header"><h2>Statement</h2><button class="iconbtn" data-close-sheet>✕</button></div>
+    <div class="sheet-header"><h2>Statement</h2><button class="iconbtn" data-close-sheet><i data-icon="x"></i></button></div>
     <div id="statementContent"></div>
     <div class="field" style="margin-top:14px;">
       <label>Send to WhatsApp Number</label>
       <input type="tel" id="statementSendToNumber" placeholder="e.g. 0712 345 678">
       <div class="hint">Filled in with this customer's saved number — change it to send to someone else instead.</div>
     </div>
-    <button class="btn btn-primary" id="statementShareBtn" style="margin-top:6px; background:#25D366; border-color:#25D366;">💬 Share via WhatsApp</button>
+    <button class="btn btn-primary" id="statementShareBtn" style="margin-top:6px; background:#25D366; border-color:#25D366;"><i data-icon="message-circle"></i> Share via WhatsApp</button>
     <div class="btn-row" style="margin-top:10px;">
-      <button class="btn btn-outline" id="statementDownloadBtn">⬇️ Save as Image</button>
-      <button class="btn btn-outline" id="statementPrintBtn">🖨 Print</button>
+      <button class="btn btn-outline" id="statementDownloadBtn"><i data-icon="download"></i> Save as Image</button>
+      <button class="btn btn-outline" id="statementPrintBtn"><i data-icon="printer"></i> Print</button>
     </div>
   </div>
 </div>
@@ -532,7 +532,7 @@
 <div class="overlay" id="setPinSheet">
   <div class="sheet">
     <div class="grabber"></div>
-    <div class="sheet-header"><h2 id="setPinTitle">Set PIN Lock</h2><button class="iconbtn" data-close-sheet>✕</button></div>
+    <div class="sheet-header"><h2 id="setPinTitle">Set PIN Lock</h2><button class="iconbtn" data-close-sheet><i data-icon="x"></i></button></div>
     <p class="muted" style="margin-bottom:16px;">Choose a 4-digit PIN. You'll need it to open Duka Ledger.</p>
     <div class="field"><label>New PIN</label><input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6" id="newPinInput" placeholder="••••"></div>
     <div class="field"><label>Confirm PIN</label><input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6" id="confirmPinInput" placeholder="••••"></div>
@@ -549,7 +549,7 @@
       <h2>Notifications</h2>
       <div style="display:flex; gap:8px; align-items:center;">
         <button class="link-btn" id="notifMarkReadBtn" style="font-size:12px;">Mark all read</button>
-        <button class="iconbtn" data-close-sheet>✕</button>
+        <button class="iconbtn" data-close-sheet><i data-icon="x"></i></button>
       </div>
     </div>
     <div id="notifList"></div>
@@ -560,7 +560,7 @@
 <div class="overlay" id="historySheet">
   <div class="sheet">
     <div class="grabber"></div>
-    <div class="sheet-header"><h2>History</h2><button class="iconbtn" data-close-sheet>✕</button></div>
+    <div class="sheet-header"><h2>History</h2><button class="iconbtn" data-close-sheet><i data-icon="x"></i></button></div>
     <p class="muted" style="margin-bottom:12px;">Every action taken in Duka Ledger — customers, debts, payments, backups and settings — recorded here for your records.</p>
     <div id="historyList"></div>
   </div>
@@ -570,7 +570,7 @@
 <div class="overlay" id="termsSheet">
   <div class="sheet">
     <div class="grabber"></div>
-    <div class="sheet-header"><h2>Terms &amp; Conditions</h2><button class="iconbtn" data-close-sheet>✕</button></div>
+    <div class="sheet-header"><h2>Terms &amp; Conditions</h2><button class="iconbtn" data-close-sheet><i data-icon="x"></i></button></div>
     <div class="legal-text">
       <p><strong>Last updated: August 2026</strong></p>
       <p>Duka Ledger is provided by Darius Momanyi ("we", "our") as a free, offline-first tool to help small businesses and individuals record customer credit, debts, and payments.</p>
@@ -588,7 +588,7 @@
 <div class="overlay" id="privacySheet">
   <div class="sheet">
     <div class="grabber"></div>
-    <div class="sheet-header"><h2>Privacy Policy</h2><button class="iconbtn" data-close-sheet>✕</button></div>
+    <div class="sheet-header"><h2>Privacy Policy</h2><button class="iconbtn" data-close-sheet><i data-icon="x"></i></button></div>
     <div class="legal-text">
       <p><strong>Last updated: August 2026</strong></p>
       <p>Duka Ledger is built to be offline-first and local-only by default. This policy explains exactly what that means, and discloses the two narrow exceptions below.</p>
@@ -609,7 +609,7 @@
 <div class="overlay" id="changelogSheet">
   <div class="sheet">
     <div class="grabber"></div>
-    <div class="sheet-header"><h2 id="changelogTitle">What's New</h2><button class="iconbtn" data-close-sheet>✕</button></div>
+    <div class="sheet-header"><h2 id="changelogTitle">What's New</h2><button class="iconbtn" data-close-sheet><i data-icon="x"></i></button></div>
     <div id="changelogList"></div>
     <button class="btn btn-primary" style="margin-top:16px;" id="changelogOkBtn">Got It</button>
   </div>
@@ -619,7 +619,7 @@
 <div class="overlay" id="guideSheet">
   <div class="sheet">
     <div class="grabber"></div>
-    <div class="sheet-header"><h2>How to Use Duka Ledger</h2><button class="iconbtn" data-close-sheet>✕</button></div>
+    <div class="sheet-header"><h2>How to Use Duka Ledger</h2><button class="iconbtn" data-close-sheet><i data-icon="x"></i></button></div>
     <div class="legal-text">
       <p><strong>1. Add your first customer.</strong> Tap the + button on Home, or "Customers → + Add." Enter their name and phone number — phone lets you send receipts straight to WhatsApp later. On supported phones you can also tap "Import from Contacts" to pull the name and number in automatically.</p>
       <p><strong>2. Record a debt.</strong> Tap + → Record Debt, choose the customer, enter the amount and what it was for (e.g. "Cement and sand"), then save. Their balance updates immediately.</p>
@@ -640,7 +640,7 @@
 <div class="overlay" id="aboutSheet">
   <div class="sheet">
     <div class="grabber"></div>
-    <div class="sheet-header"><h2>About Duka Ledger</h2><button class="iconbtn" data-close-sheet>✕</button></div>
+    <div class="sheet-header"><h2>About Duka Ledger</h2><button class="iconbtn" data-close-sheet><i data-icon="x"></i></button></div>
 
     <div style="text-align:center; padding:6px 0 16px;">
       <div class="avatar" style="width:56px; height:56px; margin:0 auto 10px; font-size:20px;">DL</div>
@@ -705,20 +705,20 @@
 <div class="overlay" id="referSheet">
   <div class="sheet">
     <div class="grabber"></div>
-    <div class="sheet-header"><h2>Refer a Friend</h2><button class="iconbtn" data-close-sheet>✕</button></div>
+    <div class="sheet-header"><h2>Refer a Friend</h2><button class="iconbtn" data-close-sheet><i data-icon="x"></i></button></div>
     <p class="muted" style="margin-bottom:16px;">Know another shopkeeper who could use Duka Ledger? Enter their details and we'll open WhatsApp with a message ready to send to Darius.</p>
-    <button class="btn btn-outline" id="referImportContactBtn" style="display:none; margin-bottom:16px;">📇 Import from Contacts</button>
+    <button class="btn btn-outline" id="referImportContactBtn" style="display:none; margin-bottom:16px;"><i data-icon="paperclip"></i> Import from Contacts</button>
     <div class="field"><label>Friend's Name *</label><input type="text" id="referFriendName" placeholder="e.g. John Otieno"></div>
     <div class="field"><label>Friend's Phone Number *</label><input type="tel" id="referFriendPhone" placeholder="e.g. 0712 345 678"></div>
     <div class="muted" id="referFormError" style="color:var(--danger); margin-bottom:10px;"></div>
-    <button class="btn btn-primary" id="referSendBtn" style="background:#25D366; border-color:#25D366;">💬 Send Referral via WhatsApp</button>
+    <button class="btn btn-primary" id="referSendBtn" style="background:#25D366; border-color:#25D366;"><i data-icon="message-circle"></i> Send Referral via WhatsApp</button>
   </div>
 </div>
 
 <!-- ================= DIALOG: Buy the developer a soda ================= -->
 <div class="overlay modal-center" id="sodaSheet">
   <div class="dialog">
-    <div class="glyph">🥤</div>
+    <div class="glyph"><i data-icon="cup-soda" data-icon-size="30"></i></div>
     <h3>Buy the Developer a Soda</h3>
     <p>If Duka Ledger has saved you time and kept your books straight, you can send the developer a soda — every bit is appreciated.</p>
     <div class="soda-detail-row">
@@ -727,11 +727,11 @@
         <div class="num">0110 554 040</div>
         <div class="muted" style="margin-top:2px;">Darius</div>
       </div>
-      <button class="btn btn-outline btn-sm" id="copySodaNumberBtn">📋 Copy</button>
+      <button class="btn btn-outline btn-sm" id="copySodaNumberBtn"><i data-icon="clipboard" data-icon-size="16"></i> Copy</button>
     </div>
     <div class="btn-row">
       <button class="btn btn-outline dlg-cancel" id="sodaCloseBtn">Maybe Later</button>
-      <button class="btn btn-primary" id="sodaWhatsappBtn" style="background:#25D366; border-color:#25D366;">💬 Open WhatsApp</button>
+      <button class="btn btn-primary" id="sodaWhatsappBtn" style="background:#25D366; border-color:#25D366;"><i data-icon="message-circle"></i> Open WhatsApp</button>
     </div>
   </div>
 </div>
@@ -739,7 +739,7 @@
 <!-- ================= DIALOG: Generic confirm ================= -->
 <div class="overlay modal-center" id="confirmDialog">
   <div class="dialog">
-    <div class="glyph">⚠</div>
+    <div class="glyph"></div>
     <h3 class="dlg-title">Are you sure?</h3>
     <p class="dlg-message">This action cannot be undone.</p>
     <div class="btn-row">
@@ -750,6 +750,7 @@
 </div>
 
 <script src="./config.js"></script>
+<script src="./icons.js"></script>
 <script src="./db.js"></script>
 <script src="./utils.js"></script>
 <script src="./lock.js"></script>

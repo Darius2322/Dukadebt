@@ -12,14 +12,14 @@ const About = {
       const digits = s.supportPhone.replace(/[^0-9+]/g, '').replace(/^0/, '254').replace('+', '');
       rows.push(`
         <div class="action-row" data-wa="${Utils.esc(digits)}" style="cursor:pointer;">
-          <div class="ic payment">💬</div>
+          <div class="ic payment">${Icon('message-circle')}</div>
           <div><div class="t">${Utils.esc(s.supportPhone)}</div><div class="s">Message on WhatsApp</div></div>
         </div>`);
     }
     if (s.supportEmail) {
       rows.push(`
         <div class="action-row" data-mail="${Utils.esc(s.supportEmail)}" style="cursor:pointer;">
-          <div class="ic">✉️</div>
+          <div class="ic">${Icon('mail')}</div>
           <div><div class="t">${Utils.esc(s.supportEmail)}</div><div class="s">Send an email</div></div>
         </div>`);
     }

@@ -46,13 +46,13 @@ const Profile = {
         <button class="btn btn-outline btn-sm" id="profilePaymentBtn">+ Record Payment</button>
       </div>
       <div class="btn-row" style="margin-bottom:6px;">
-        <button class="btn btn-ghost btn-sm" id="profileStatementBtn">📄 Statement</button>
-        <button class="btn btn-ghost btn-sm" id="profileEditBtn">✎ Edit</button>
-        <button class="btn btn-ghost btn-sm" id="profileDeleteBtn" style="color:var(--danger)">🗑 Delete</button>
+        <button class="btn btn-ghost btn-sm" id="profileStatementBtn">${Icon('file-text', { size: 16 })} Statement</button>
+        <button class="btn btn-ghost btn-sm" id="profileEditBtn">${Icon('pencil', { size: 16 })} Edit</button>
+        <button class="btn btn-ghost btn-sm" id="profileDeleteBtn" style="color:var(--danger)">${Icon('trash-2', { size: 16 })} Delete</button>
       </div>
 
-      ${customer.address ? `<div class="muted" style="margin-top:8px;">📍 ${Utils.esc(customer.address)}</div>` : ''}
-      ${customer.notes ? `<div class="muted" style="margin-top:4px;">📝 ${Utils.esc(customer.notes)}</div>` : ''}
+      ${customer.address ? `<div class="muted" style="margin-top:8px; display:flex; align-items:center; gap:6px;">${Icon('map-pin', { size: 14 })} ${Utils.esc(customer.address)}</div>` : ''}
+      ${customer.notes ? `<div class="muted" style="margin-top:4px; display:flex; align-items:center; gap:6px;">${Icon('notebook-pen', { size: 14 })} ${Utils.esc(customer.notes)}</div>` : ''}
 
       <div class="section-title"><h2>Transaction History</h2></div>
       ${this.renderTimeline(withRunning, customer)}

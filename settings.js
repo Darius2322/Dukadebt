@@ -158,7 +158,7 @@ const Settings = {
       message: 'Duka Ledger will open without asking for a PIN or fingerprint.',
       confirmLabel: 'Remove PIN',
       danger: true,
-      glyph: '⚠'
+      icon: 'alert-triangle'
     });
     if (!ok) return;
     State.settings = await DB.saveSettings({ pinHash: '', pinSalt: '', biometricEnabled: false, biometricCredentialId: '' });
